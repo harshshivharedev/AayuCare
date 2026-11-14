@@ -15,7 +15,7 @@ import {
   ArrowRight, 
   Terminal, 
   CheckCircle2, 
-  Server
+  Loader2
 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -42,31 +42,31 @@ export const App: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Real API integration with live backend /api/ai/analyze endpoint
   const handleRunAiDemo = async () => {
     if (!prompt.trim()) return;
     setAiLoading(true);
     setAiOutput(null);
 
     try {
-      // Demo response simulation or live call
-      setTimeout(() => {
-        setAiOutput(
-          JSON.stringify(
-            {
-              status: "success",
-              engine: "Gemini 2.5 Flash",
-              executionLatencyMs: 412,
-              response: `Analyzed query: "${prompt}". Ready to execute tailored domain logic upon tomorrow's problem statement release.`,
-              architecture: "SOLID Strategy Provider [Open/Closed]"
-            },
-            null,
-            2
-          )
-        );
-        setAiLoading(false);
-      }, 700);
+      const response = await ApiClient.post<any>('/ai/analyze', {
+        prompt: prompt.trim()
+      });
+
+      setAiOutput(JSON.stringify(response.data, null, 2));
     } catch (err: any) {
-      setAiOutput(`Error: ${err.message}`);
+      setAiOutput(
+        JSON.stringify(
+          {
+            error: true,
+            message: err.message || 'Failed to communicate with AI endpoint',
+            tip: 'Verify that the backend is running on port 5000.'
+          },
+          null,
+          2
+        )
+      );
+    } finally {
       setAiLoading(false);
     }
   };
@@ -122,14 +122,14 @@ export const App: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Database Latency"
-            value={`${health?.database.latencyMs ?? 2}ms`}
-            badge={health?.database.status === 'healthy' ? 'PostgreSQL Live' : 'Connected'}
+            value={`${health?.database?.latencyMs ?? 0}ms`}
+            badge={health?.database?.status === 'healthy' ? 'PostgreSQL Live' : 'Connected'}
             change="Pooled via Prisma"
             icon={Database}
           />
           <StatCard
             title="System Memory"
-            value={`${health?.system.memoryHeapUsedMB ?? 38} MB`}
+            value={`${health?.system?.memoryHeapUsedMB ?? 42} MB`}
             badge="Optimized"
             change="Lightweight footprint"
             icon={Cpu}
@@ -180,7 +180,7 @@ export const App: React.FC = () => {
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            Gemini AI Integration Lab
+            Gemini AI Live Lab
           </button>
         </div>
 
@@ -222,12 +222,12 @@ export const App: React.FC = () => {
                 Tomorrow's Sprint Strategy
               </h3>
               <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                When the WhatsApp announcement drops the problem statement at 9:30 AM:
+                When the WhatsApp announcement drops the problem statement:
               </p>
               <ol className="space-y-2.5 text-xs sm:text-sm text-slate-300 list-decimal list-inside">
                 <li><strong className="text-white">Domain Mapping:</strong> Add specialized models to `schema.prisma` in 5 mins.</li>
-                <li><strong className="text-white">Feature Endpoints:</strong> Extend `src/modules/[domain]` with Controller-Service-Repo.</li>
-                <li><strong className="text-white">AI Automation:</strong> Connect prompt templates in `gemini.service.ts`.</li>
+                <li><strong className="text-white">Feature Endpoints:</strong> Adapt `src/modules/project` blueprint for target entities.</li>
+                <li><strong className="text-white">AI Automation:</strong> Wire business prompts into `aiService`.</li>
                 <li><strong className="text-white">Dashboard Polish:</strong> Render interactive charts and tables.</li>
                 <li><strong className="text-white">1-Click Deploy:</strong> Push to GitHub and deploy live to Vercel + Render.</li>
               </ol>
@@ -258,7 +258,7 @@ export const App: React.FC = () => {
               <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
                 <div className="text-brand-400 text-xs font-bold uppercase tracking-wider">Open / Closed (O)</div>
                 <p className="text-xs text-slate-400">
-                  `IAiService` interface implements Strategy Pattern. New AI providers or local fallbacks can be introduced without editing business logic.
+                  `IAiProvider` interface implements Strategy Pattern. New AI providers or local fallbacks can be introduced without editing business logic.
                 </p>
               </div>
               <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
@@ -271,7 +271,7 @@ export const App: React.FC = () => {
 
             <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 overflow-x-auto space-y-1">
               <div className="text-slate-500">// High-Level Request Flow</div>
-              <div className="text-purple-400">Client (React) <span className="text-slate-400">→</span> Express Middleware Pipeline (Helmet + CORS + RateLimit + Zod)</div>
+              <div className="text-purple-400">Client (React) <span className="text-slate-400">→</span> Express Middleware Pipeline (Helmet + Strict CORS + RateLimit + Zod)</div>
               <div className="text-indigo-400"> &nbsp;&nbsp;↳ Controller Layer (Request Extraction & Response Mapping)</div>
               <div className="text-blue-400"> &nbsp;&nbsp;&nbsp;&nbsp;↳ Service Layer (Business Validation & Logic Orchestration)</div>
               <div className="text-emerald-400"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ Repository Layer (Prisma ORM with Pool Management) <span className="text-slate-400">→</span> PostgreSQL</div>
@@ -285,33 +285,40 @@ export const App: React.FC = () => {
             <div>
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-brand-400" />
-                Gemini AI Engine Sandbox
+                Live Gemini AI Engine Sandbox
               </h3>
               <p className="text-xs text-slate-400">
-                Test prompt processing and verify multimodal fallback handling
+                Sends live requests to the backend endpoint <code className="text-brand-300 bg-slate-900 px-1 py-0.5 rounded">POST /api/ai/analyze</code>
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                  Input Prompt / Test Simulation
+                  Input Prompt / Real API Call
                 </label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="e.g. Generate a predictive analysis of customer retention"
+                    placeholder="e.g. Generate a predictive model for scalable customer onboarding"
                     className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500 transition-colors"
                     onKeyDown={(e) => e.key === 'Enter' && handleRunAiDemo()}
                   />
                   <button
                     onClick={handleRunAiDemo}
                     disabled={aiLoading}
-                    className="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-semibold transition-all shadow-md shadow-brand-600/25 disabled:opacity-50"
+                    className="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-semibold transition-all shadow-md shadow-brand-600/25 disabled:opacity-50 flex items-center gap-2"
                   >
-                    {aiLoading ? 'Processing...' : 'Run Simulation'}
+                    {aiLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      'Call Live API'
+                    )}
                   </button>
                 </div>
               </div>
@@ -319,9 +326,9 @@ export const App: React.FC = () => {
               {aiOutput && (
                 <div className="space-y-1.5">
                   <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Engine Output
+                    Server Response Payload
                   </span>
-                  <pre className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-emerald-400 font-mono text-xs overflow-x-auto">
+                  <pre className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-emerald-400 font-mono text-xs overflow-x-auto whitespace-pre-wrap">
                     {aiOutput}
                   </pre>
                 </div>

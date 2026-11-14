@@ -6,9 +6,10 @@ declare global {
       user?: {
         id: string;
         email: string;
-        role: string;
+        role: 'USER' | 'ADMIN';
       };
       cookies?: Record<string, any>;
+      id?: string;
     }
   }
 }

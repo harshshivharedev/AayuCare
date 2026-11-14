@@ -31,53 +31,65 @@ export const errorHandler = (
       message: e.message
     }));
   }
-  // 3. Prisma Known Database Request Errors
-  else if (err.name === 'PrismaClientKnownRequestError') {
+  // 3. Prisma Known Request Errors (checks both error name and code for bulletproof detection)
+  else if (
+    err.name === 'PrismaClientKnownRequestError' ||
+    (typeof err.code === 'string' && err.code.startsWith('P'))
+  ) {
     switch (err.code) {
       case 'P2002': {
         statusCode = 409;
-        const target = (err.meta?.target as string[])?.join(', ') || 'field';
+        const target = Array.isArray(err.meta?.target)
+          ? err.meta.target.join(', ')
+          : (err.meta?.target as string) || 'unique field';
         message = `A resource with this ${target} already exists.`;
-        errors = [{ field: target, message: 'Must be unique' }];
+        errors = [{ field: target, message: 'Value must be unique' }];
         break;
       }
       case 'P2025': {
         statusCode = 404;
-        message = (err.meta?.cause as string) || 'Requested record was not found.';
+        message = (err.meta?.cause as string) || 'Requested record was not found in database.';
         break;
       }
       case 'P2003': {
         statusCode = 400;
-        message = 'Foreign key constraint violation: Related entity does not exist.';
+        message = 'Foreign key constraint failed: Referenced entity does not exist.';
         break;
       }
       case 'P2014': {
         statusCode = 400;
-        message = 'Invalid relation mutation: A required relational link was broken.';
+        message = 'Relation mutation rejected: A required relational link was broken.';
         break;
       }
       case 'P2000': {
         statusCode = 400;
-        message = 'Input value exceeds maximum allowed column length.';
+        message = 'Input length exceeds maximum allowed database column capacity.';
         break;
       }
       default: {
         statusCode = 400;
-        message = 'Database operation failed.';
+        message = `Database constraint error [${err.code}].`;
         break;
       }
     }
-  } 
-  // 4. JWT Errors
+  }
+  // 4. Prisma Validation Error
+  else if (err.name === 'PrismaClientValidationError') {
+    statusCode = 400;
+    message = 'Invalid database query arguments provided.';
+  }
+  // 5. JWT Authentication Errors
   else if (err.name === 'JsonWebTokenError') {
     statusCode = 401;
-    message = 'Invalid authentication token.';
+    message = 'Invalid authorization token.';
   } else if (err.name === 'TokenExpiredError') {
     statusCode = 401;
-    message = 'Authentication token expired.';
+    message = 'Authorization token has expired.';
+  } else if (err.message && ENV.NODE_ENV === 'development') {
+    message = err.message;
   }
 
-  // Structured Logging
+  // Structured Logging with Request ID
   logger.error(
     `[${req.method}] ${req.originalUrl} - ${statusCode} - ${message}`,
     requestId,

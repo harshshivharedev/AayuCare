@@ -1,13 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { z } from 'zod';
 import { ENV } from '../config/env';
 import { ApiError } from '../utils/apiError';
 
-export interface AuthenticatedUser {
-  id: string;
-  email: string;
-  role: 'USER' | 'ADMIN';
-}
+// Strict runtime schema validation for JWT payload
+export const jwtPayloadSchema = z.object({
+  id: z.string().min(1, 'Token must contain a valid subject id'),
+  email: z.string().email('Token must contain a valid email address'),
+  role: z.enum(['USER', 'ADMIN'])
+});
+
+export type AuthenticatedUser = z.infer<typeof jwtPayloadSchema>;
 
 export const authenticateJwt = (req: Request, res: Response, next: NextFunction): void => {
   try {
@@ -23,17 +27,30 @@ export const authenticateJwt = (req: Request, res: Response, next: NextFunction)
       throw ApiError.unauthorized('Authentication required: Token missing');
     }
 
-    const decoded = jwt.verify(token, ENV.JWT_SECRET) as AuthenticatedUser;
-    req.user = decoded;
+    // 1. Cryptographic Signature Verification
+    const rawDecoded = jwt.verify(token, ENV.JWT_SECRET);
+
+    // 2. Strict Runtime Schema Validation (Defense against forged/malformed payload)
+    const validation = jwtPayloadSchema.safeParse(rawDecoded);
+    if (!validation.success) {
+      throw ApiError.unauthorized('Invalid authentication token payload structure');
+    }
+
+    req.user = validation.data;
     next();
   } catch (error: any) {
-    next(error);
+    if (error.name === 'TokenExpiredError') {
+      next(ApiError.unauthorized('Authentication token expired, please login again'));
+    } else if (error.name === 'JsonWebTokenError') {
+      next(ApiError.unauthorized('Malformed or invalid authorization token'));
+    } else {
+      next(error);
+    }
   }
 };
 
 /**
  * Role-Based Access Control (RBAC) Middleware
- * Verifies if the authenticated user has one of the allowed roles
  */
 export const requireRole = (...allowedRoles: Array<'USER' | 'ADMIN'>) => {
   return (req: Request, res: Response, next: NextFunction): void => {
@@ -41,7 +58,7 @@ export const requireRole = (...allowedRoles: Array<'USER' | 'ADMIN'>) => {
       return next(ApiError.unauthorized('Authentication required'));
     }
 
-    if (!allowedRoles.includes(req.user.role as any)) {
+    if (!allowedRoles.includes(req.user.role)) {
       return next(
         ApiError.forbidden(
           `Access forbidden: Requires one of [${allowedRoles.join(', ')}] role`
@@ -54,8 +71,7 @@ export const requireRole = (...allowedRoles: Array<'USER' | 'ADMIN'>) => {
 };
 
 /**
- * Ownership Verification Middleware
- * Ensures the resource being modified belongs to the requester, or requester is ADMIN
+ * Resource Ownership Verification Middleware
  */
 export const requireOwnership = (
   getResourceOwnerId: (req: Request) => Promise<string | null | undefined>

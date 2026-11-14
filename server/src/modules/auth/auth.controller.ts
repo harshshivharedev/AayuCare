@@ -9,8 +9,16 @@ export class AuthController {
   register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const result = await this.authService.register(req.body);
+      
+      // Token is placed exclusively in a secure, HttpOnly, SameSite cookie
       this.setCookieToken(res, result.token);
-      res.status(201).json(ApiResponse.success('User registered successfully', result));
+
+      // Never leak token in JSON response body
+      res.status(201).json(
+        ApiResponse.success('User registered successfully', {
+          user: result.user
+        })
+      );
     } catch (error) {
       next(error);
     }
@@ -19,8 +27,16 @@ export class AuthController {
   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const result = await this.authService.login(req.body);
+      
+      // Token is placed exclusively in a secure, HttpOnly, SameSite cookie
       this.setCookieToken(res, result.token);
-      res.status(200).json(ApiResponse.success('Login successful', result));
+
+      // Never leak token in JSON response body
+      res.status(200).json(
+        ApiResponse.success('Login successful', {
+          user: result.user
+        })
+      );
     } catch (error) {
       next(error);
     }
@@ -31,7 +47,8 @@ export class AuthController {
       res.clearCookie('token', {
         httpOnly: true,
         secure: ENV.NODE_ENV === 'production',
-        sameSite: 'strict'
+        sameSite: 'strict',
+        path: '/'
       });
       res.status(200).json(ApiResponse.success('Logged out successfully'));
     } catch (error) {
@@ -54,7 +71,8 @@ export class AuthController {
       httpOnly: true,
       secure: ENV.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     });
   }
 }

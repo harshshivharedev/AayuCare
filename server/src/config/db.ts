@@ -1,13 +1,16 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { ENV } from './env';
 
 // Singleton pattern for Prisma Client to prevent connection exhaustion
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
+const logLevels: Prisma.LogLevel[] =
+  ENV.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'];
+
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
-    log: ENV.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error']
+    log: logLevels
   });
 
 if (ENV.NODE_ENV !== 'production') {
@@ -20,6 +23,6 @@ export async function connectDB(): Promise<void> {
     console.log('✅ PostgreSQL database connected successfully via Prisma');
   } catch (error) {
     console.error('❌ Database connection failed:', error);
-    // Don't exit immediately so app can still boot for mock/health checks if needed
+    // Graceful continuation so offline/mock dev works
   }
 }

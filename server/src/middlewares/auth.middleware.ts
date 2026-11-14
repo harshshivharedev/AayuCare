@@ -9,14 +9,6 @@ export interface AuthenticatedUser {
   role: string;
 }
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: AuthenticatedUser;
-    }
-  }
-}
-
 export const authenticateJwt = (req: Request, res: Response, next: NextFunction): void => {
   try {
     let token: string | undefined;

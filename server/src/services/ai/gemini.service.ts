@@ -8,7 +8,7 @@ export class GeminiService implements IAiService {
   private modelName = 'gemini-2.5-flash';
 
   constructor() {
-    if (ENV.GEMINI_API_KEY) {
+    if (ENV.GEMINI_API_KEY && ENV.GEMINI_API_KEY.trim() !== '') {
       try {
         this.ai = new GoogleGenAI({ apiKey: ENV.GEMINI_API_KEY });
         logger.info('🤖 Gemini AI Service initialized successfully');
@@ -16,13 +16,13 @@ export class GeminiService implements IAiService {
         logger.warn('Failed to initialize GoogleGenAI client:', error);
       }
     } else {
-      logger.warn('⚠️ GEMINI_API_KEY is not set. GeminiService will run in mock/fallback mode.');
+      logger.info('ℹ️ GEMINI_API_KEY is not set. GeminiService is operating in mock/fallback mode.');
     }
   }
 
   async generateText(prompt: string, systemInstruction?: string): Promise<string> {
     if (!this.ai) {
-      return `[Mock AI Response - Set GEMINI_API_KEY in .env to enable live AI]: Processed prompt: "${prompt.slice(0, 50)}..."`;
+      return `[Demo/Fallback AI Response]: Analysis for "${prompt}". Configure GEMINI_API_KEY for live Google Gemini calls.`;
     }
 
     try {
@@ -43,8 +43,8 @@ export class GeminiService implements IAiService {
     if (!this.ai) {
       return {
         mock: true,
-        message: 'Mock JSON response. Add GEMINI_API_KEY for real AI processing.',
-        originalPrompt: prompt
+        message: 'Mock structured output. Add GEMINI_API_KEY in .env for live Gemini output.',
+        analyzedPrompt: prompt
       } as unknown as T;
     }
 

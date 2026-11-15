@@ -3,17 +3,35 @@ import { ApiResponse } from '../types';
 const API_BASE = '/api';
 
 export class ApiClient {
-  private static async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+  private static getHeaders(isFormData = false): Record<string, string> {
+    const headers: Record<string, string> = {};
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return headers;
+  }
+
+  private static async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<ApiResponse<T>> {
+    const isFormData = options.body instanceof FormData;
     const headers = {
-      'Content-Type': 'application/json',
-      ...options.headers,
+      ...this.getHeaders(isFormData),
+      ...options.headers
     };
 
     try {
       const response = await fetch(`${API_BASE}${endpoint}`, {
         ...options,
         headers,
-        credentials: 'include' // Send cookies automatically
+        credentials: 'include'
       });
 
       const json = await response.json();
@@ -33,10 +51,31 @@ export class ApiClient {
     return this.request<T>(endpoint, { method: 'GET' });
   }
 
-  static post<T>(endpoint: string, body: any): Promise<ApiResponse<T>> {
+  static post<T>(endpoint: string, body?: any): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'POST',
-      body: JSON.stringify(body)
+      body: body ? JSON.stringify(body) : undefined
+    });
+  }
+
+  static patch<T>(endpoint: string, body?: any): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
+      method: 'PATCH',
+      body: body ? JSON.stringify(body) : undefined
+    });
+  }
+
+  static delete<T>(endpoint: string): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, { method: 'DELETE' });
+  }
+
+  static async uploadFile<T>(endpoint: string, file: File): Promise<ApiResponse<T>> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.request<T>(endpoint, {
+      method: 'POST',
+      body: formData
     });
   }
 }

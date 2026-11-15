@@ -4,20 +4,44 @@
 
 @layer base {
   body {
-    @apply bg-[#0b0f19] text-slate-100;
+    @apply bg-slate-50 text-slate-800 antialiased selection:bg-teal-500 selection:text-white;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
-.glass-panel {
-  @apply bg-slate-900/60 backdrop-blur-md border border-slate-800/80 shadow-xl;
+/* Practo / Apple Health Style Clean Card */
+.med-card {
+  @apply bg-white rounded-2xl border border-slate-200/80 shadow-sm transition-all duration-200 hover:shadow-md;
 }
 
-.glow-card {
-  position: relative;
-  transition: all 0.3s ease;
+.med-card-highlight {
+  @apply bg-white rounded-2xl border-2 border-teal-500 shadow-md shadow-teal-500/10;
 }
 
-.glow-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.15);
+/* Subtle clean badge */
+.badge-routine {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200;
+}
+
+.badge-critical {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

@@ -70,6 +70,16 @@ app.use(cookieParser());
 app.use('/api', apiRateLimiter);
 
 // 6. Application Routes
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({
+    name: 'AayuCare (आयु-Care) API',
+    status: 'ONLINE',
+    version: '1.0.0',
+    documentation: 'Catalyst x PromptWars 2026 Solo Hackathon',
+    healthCheck: '/api/health'
+  });
+});
+
 app.use('/uploads', express.static('uploads'));
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);

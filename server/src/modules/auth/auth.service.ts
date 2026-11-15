@@ -106,7 +106,16 @@ export class AuthService implements IAuthService {
     let elderProfile: ElderProfileSummary | null = null;
     if (user.role === 'ELDERLY') {
       try {
-        elderProfile = await this.authRepository.findElderProfileByUserId(user.id);
+        let profile = await this.authRepository.findElderProfileByUserId(user.id);
+        if (!profile) {
+          const randomCode = `CARE-${crypto.randomInt(100000, 999999)}`;
+          profile = await this.authRepository.createElderProfile({
+            userId: user.id,
+            fullName: user.name,
+            carePasscode: randomCode
+          });
+        }
+        elderProfile = profile;
       } catch {
         // Safe fallback
       }

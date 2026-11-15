@@ -5,6 +5,7 @@ import { Navbar } from './components/Navbar';
 import { AuthModal } from './components/AuthModal';
 import { PairElderModal } from './components/PairElderModal';
 import { VisualPillbox } from './components/elder/VisualPillbox';
+import { MedicineStudio } from './components/caregiver/MedicineStudio';
 import {
   HeartPulse,
   Pill,
@@ -152,21 +153,8 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            {/* Caregiver Roadmap Info Card */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center space-y-4 shadow-xs">
-              <div className="w-14 h-14 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center mx-auto border border-teal-200">
-                <Sparkles className="w-7 h-7" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">
-                  Phase F1 Connected: Caregiver Navigation & Design System Active
-                </h3>
-                <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
-                  Caretaker workspace is initialized with normal medical app typography and clean Practo/Apollo cards.
-                  Ready to link with Phase F2 & F3.
-                </p>
-              </div>
-            </div>
+            {/* Caregiver Medicine Studio & AI Prescription Scanner (Phase F3) */}
+            <MedicineStudio />
           </div>
         )}
       </main>

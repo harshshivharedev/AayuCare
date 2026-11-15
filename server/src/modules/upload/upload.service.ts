@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { ENV } from '../../config/env';
 import { ApiError } from '../../utils/apiError';
+import { logger } from '../../utils/logger';
 
 export interface UploadResult {
   url: string;
@@ -40,7 +41,12 @@ export class CloudinaryUploadService implements IUploadService {
     mimetype: string
   ): Promise<UploadResult> {
     if (this.isConfigured) {
-      return this.uploadToCloudinaryStream(buffer, 'aayucare/pills', 'image');
+      try {
+        return await this.uploadToCloudinaryStream(buffer, 'aayucare/pills', 'image');
+      } catch (err: any) {
+        logger.warn(`Cloudinary stream upload unreachable (${err?.message || 'network'}), falling back to local storage.`);
+        return this.fallbackLocalStorage(buffer, originalname, mimetype, 'pills');
+      }
     }
     return this.fallbackLocalStorage(buffer, originalname, mimetype, 'pills');
   }
@@ -51,7 +57,12 @@ export class CloudinaryUploadService implements IUploadService {
     mimetype: string
   ): Promise<UploadResult> {
     if (this.isConfigured) {
-      return this.uploadToCloudinaryStream(buffer, 'aayucare/voice-notes', 'video'); // Cloudinary processes audio under resource_type 'video'
+      try {
+        return await this.uploadToCloudinaryStream(buffer, 'aayucare/voice-notes', 'video');
+      } catch (err: any) {
+        logger.warn(`Cloudinary voice stream unreachable (${err?.message || 'network'}), falling back to local storage.`);
+        return this.fallbackLocalStorage(buffer, originalname, mimetype, 'voice-notes');
+      }
     }
     return this.fallbackLocalStorage(buffer, originalname, mimetype, 'voice-notes');
   }

@@ -165,4 +165,60 @@ describe('MedicationService & Visual Pillbox Unit Tests', () => {
     assert.equal(adherence.totalTaken, 1);
     assert.equal(adherence.adherenceRate, 100);
   });
+
+  it('should allow caretaker to update medication image, voice note, and dosage when prescription changes', async () => {
+    const med = await service.createMedication({
+      elderProfileId,
+      name: 'Telmisartan 40mg',
+      dosage: '1 Tablet (40mg)',
+      scheduleTimes: ['09:00'],
+      pillImageUrl: 'https://storage.aayucare.in/pills/old_40mg.jpg',
+      voiceNoteText: 'Dada ji, ye 40mg wali goli hai',
+      dietaryGuidelines: []
+    });
+
+    // Doctor reduces dose to 20mg and brand packaging changes
+    const updatedMed = await service.updateMedication(med.id, {
+      name: 'Telmisartan 20mg',
+      dosage: '1 Tablet (20mg)',
+      pillImageUrl: 'https://storage.aayucare.in/pills/new_20mg.jpg',
+      voiceNoteText: 'Dada ji, doctor ne dose 20mg kar di hai. Ye nayi wali goli leni hai.'
+    });
+
+    assert.equal(updatedMed.name, 'Telmisartan 20mg');
+    assert.equal(updatedMed.dosage, '1 Tablet (20mg)');
+    assert.equal(updatedMed.pillImageUrl, 'https://storage.aayucare.in/pills/new_20mg.jpg');
+    assert.equal(
+      updatedMed.voiceNoteText,
+      'Dada ji, doctor ne dose 20mg kar di hai. Ye nayi wali goli leni hai.'
+    );
+
+    // Verify Today's pillbox now presents the new image & instructions automatically
+    const pillbox = await service.getTodayPillbox(elderProfileId);
+    const morningSlot = pillbox.slots.morning.find((i) => i.id === med.id);
+    assert.ok(morningSlot);
+    assert.equal(morningSlot.name, 'Telmisartan 20mg');
+    assert.equal(morningSlot.pillImageUrl, 'https://storage.aayucare.in/pills/new_20mg.jpg');
+  });
+
+  it('should remove medication from Today Pillbox when caretaker deactivates/stops it', async () => {
+    const med = await service.createMedication({
+      elderProfileId,
+      name: 'Temporary Antibiotic 500mg',
+      dosage: '1 Capsule',
+      scheduleTimes: ['08:00'],
+      dietaryGuidelines: []
+    });
+
+    // Verify it initially appears
+    let pillbox = await service.getTodayPillbox(elderProfileId);
+    assert.ok(pillbox.slots.morning.some((i) => i.id === med.id));
+
+    // Course completed, caretaker stops medication
+    await service.deleteMedication(med.id);
+
+    // Verify it no longer appears in today's pillbox
+    pillbox = await service.getTodayPillbox(elderProfileId);
+    assert.equal(pillbox.slots.morning.some((i) => i.id === med.id), false);
+  });
 });

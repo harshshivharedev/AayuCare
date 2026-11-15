@@ -16,5 +16,13 @@ export const loginSchema = z.object({
   })
 });
 
+export const googleAuthSchema = z.object({
+  body: z.object({
+    idToken: z.string().min(10, 'Google ID Token is required'),
+    role: z.enum(['ELDERLY', 'CAREGIVER', 'FAMILY']).optional().default('CAREGIVER')
+  })
+});
+
 export type RegisterInput = z.input<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
+export type GoogleAuthInput = z.infer<typeof googleAuthSchema>['body'];

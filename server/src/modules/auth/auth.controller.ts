@@ -9,14 +9,13 @@ export class AuthController {
   register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const result = await this.authService.register(req.body);
-      
-      // Token is placed exclusively in a secure, HttpOnly, SameSite cookie
       this.setCookieToken(res, result.token);
 
-      // Never leak token in JSON response body
       res.status(201).json(
         ApiResponse.success('User registered successfully', {
-          user: result.user
+          user: result.user,
+          token: result.token,
+          elderProfile: result.elderProfile
         })
       );
     } catch (error) {
@@ -27,14 +26,30 @@ export class AuthController {
   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const result = await this.authService.login(req.body);
-      
-      // Token is placed exclusively in a secure, HttpOnly, SameSite cookie
       this.setCookieToken(res, result.token);
 
-      // Never leak token in JSON response body
       res.status(200).json(
         ApiResponse.success('Login successful', {
-          user: result.user
+          user: result.user,
+          token: result.token,
+          elderProfile: result.elderProfile
+        })
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  googleAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.authService.googleLogin(req.body);
+      this.setCookieToken(res, result.token);
+
+      res.status(200).json(
+        ApiResponse.success('Google authentication successful', {
+          user: result.user,
+          token: result.token,
+          elderProfile: result.elderProfile
         })
       );
     } catch (error) {

@@ -11,6 +11,9 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(10, 'JWT_SECRET must be at least 10 characters'),
   JWT_EXPIRES_IN: z.string().default('7d'),
   
+  // Google OAuth
+  GOOGLE_CLIENT_ID: z.string().optional().default(''),
+
   // AI Engines (Adaption AI Primary + Gemini Fallback)
   ADAPTION_AI_API_KEY: z.string().optional().default(''),
   ADAPTION_AI_BASE_URL: z.string().optional().default('https://api.adaptionlab.com/v1'),

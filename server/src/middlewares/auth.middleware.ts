@@ -53,7 +53,8 @@ export const authenticateJwt = (req: Request, res: Response, next: NextFunction)
 /**
  * Role-Based Access Control (RBAC) Middleware
  */
-export const requireRole = (...allowedRoles: UserRole[]) => {
+export const requireRole = (...roles: (UserRole | UserRole[])[]) => {
+  const allowedRoles = roles.flat();
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
       return next(ApiError.unauthorized('Authentication required'));

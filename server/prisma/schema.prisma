@@ -66,7 +66,9 @@ enum AlertStatus {
 model User {
   id        String    @id @default(uuid())
   email     String    @unique
-  password  String
+  password  String?   // Optional for Google OAuth users
+  googleId  String?   @unique
+  avatarUrl String?
   name      String
   role      UserRole  @default(ELDERLY)
   createdAt DateTime  @default(now())

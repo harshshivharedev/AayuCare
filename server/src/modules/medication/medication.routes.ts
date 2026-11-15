@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { MedicationController } from './medication.controller';
 import { MedicationService } from './medication.service';
 import { PrismaMedicationRepository } from './medication.repository';
+import { cacheService } from '../../infrastructure/cache.service';
 import { authenticateJwt, requireRole } from '../../middlewares/auth.middleware';
 import { validateRequest } from '../../middlewares/validate.middleware';
 import {
@@ -12,7 +13,7 @@ import {
 
 const router = Router();
 const repo = new PrismaMedicationRepository();
-const service = new MedicationService(repo);
+const service = new MedicationService(repo, cacheService);
 const controller = new MedicationController(service);
 
 // 1. Caretaker creates medication with tablet photo, timings & recorded voice note

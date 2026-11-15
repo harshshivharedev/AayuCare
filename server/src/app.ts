@@ -13,6 +13,7 @@ import healthRoutes from './modules/health/health.routes';
 import authRoutes from './modules/auth/auth.routes';
 import careCircleRoutes from './modules/care-circle/careCircle.routes';
 import medicationRoutes from './modules/medication/medication.routes';
+import uploadRoutes from './modules/upload/upload.routes';
 
 const app: Application = express();
 
@@ -62,10 +63,12 @@ app.use(cookieParser());
 app.use('/api', apiRateLimiter);
 
 // 6. Application Routes
+app.use('/uploads', express.static('uploads'));
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/care-circle', careCircleRoutes);
 app.use('/api/medications', medicationRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // 7. 404 Route Handler
 app.use((req: Request, res: Response, next: NextFunction) => {

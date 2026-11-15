@@ -2,6 +2,7 @@ import { IMedicationRepository } from './medication.repository';
 import { CreateMedicationInput, UpdateMedicationInput, ConfirmDoseInput } from './medication.schema';
 import { Medication, MedicationLog, LogStatus, ConfirmationMethod, MealRelation, Criticality } from '@prisma/client';
 import { ApiError } from '../../utils/apiError';
+import { ICacheService, InMemoryCacheService } from '../../infrastructure/cache.service';
 
 export type TimeSlot = 'MORNING' | 'AFTERNOON' | 'EVENING' | 'NIGHT';
 
@@ -50,10 +51,13 @@ export interface ConfirmDoseResult {
 }
 
 export class MedicationService {
-  constructor(private readonly repo: IMedicationRepository) {}
+  constructor(
+    private readonly repo: IMedicationRepository,
+    private readonly cache: ICacheService = new InMemoryCacheService()
+  ) {}
 
   async createMedication(input: CreateMedicationInput): Promise<Medication> {
-    return await this.repo.create({
+    const med = await this.repo.create({
       elderProfileId: input.elderProfileId,
       name: input.name,
       dosage: input.dosage,
@@ -67,6 +71,9 @@ export class MedicationService {
       dietaryGuidelines: input.dietaryGuidelines || [],
       instructions: input.instructions
     });
+
+    await this.cache.del(`pillbox:${input.elderProfileId}`);
+    return med;
   }
 
   async getMedicationsByElder(elderProfileId: string): Promise<Medication[]> {
@@ -82,19 +89,28 @@ export class MedicationService {
   }
 
   async updateMedication(id: string, input: UpdateMedicationInput): Promise<Medication> {
-    await this.getMedicationById(id);
-    return await this.repo.update(id, input as Partial<Medication>);
+    const med = await this.getMedicationById(id);
+    const updated = await this.repo.update(id, input as Partial<Medication>);
+    await this.cache.del(`pillbox:${med.elderProfileId}`);
+    return updated;
   }
 
   async deleteMedication(id: string): Promise<void> {
-    await this.getMedicationById(id);
+    const med = await this.getMedicationById(id);
     await this.repo.delete(id);
+    await this.cache.del(`pillbox:${med.elderProfileId}`);
   }
 
   /**
    * Generates Today's Visual Pillbox categorized into Morning, Afternoon, Evening, and Night
    */
   async getTodayPillbox(elderProfileId: string): Promise<TodayPillboxResponse> {
+    const cacheKey = `pillbox:${elderProfileId}`;
+    const cached = await this.cache.get<TodayPillboxResponse>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const medications = await this.repo.findByElderId(elderProfileId, true);
 
     const now = new Date();
@@ -166,7 +182,7 @@ export class MedicationService {
     const takenDoses = items.filter((i) => i.status === LogStatus.TAKEN).length;
     const pendingDoses = totalDoses - takenDoses;
 
-    return {
+    const response: TodayPillboxResponse = {
       elderProfileId,
       date: now.toISOString().split('T')[0],
       summary: {
@@ -181,6 +197,9 @@ export class MedicationService {
         night
       }
     };
+
+    await this.cache.set(cacheKey, response, 60);
+    return response;
   }
 
   /**
@@ -232,6 +251,8 @@ export class MedicationService {
       confirmationMethod: (input.method as ConfirmationMethod) || ConfirmationMethod.BUTTON_TAP,
       notes: input.notes || 'Confirmed by elder via "Maine Kha Li" button tap'
     });
+
+    await this.cache.del(`pillbox:${med.elderProfileId}`);
 
     return {
       log,

@@ -14,6 +14,14 @@ const envSchema = z.object({
   // Google OAuth
   GOOGLE_CLIENT_ID: z.string().optional().default(''),
 
+  // Cloudinary Media Storage
+  CLOUDINARY_CLOUD_NAME: z.string().optional().default(''),
+  CLOUDINARY_API_KEY: z.string().optional().default(''),
+  CLOUDINARY_API_SECRET: z.string().optional().default(''),
+
+  // Redis & Queue Infrastructure (Optional, with automatic in-memory fallback)
+  REDIS_URL: z.string().optional().default(''),
+
   // AI Engines (Adaption AI Primary + Gemini Fallback)
   ADAPTION_AI_API_KEY: z.string().optional().default(''),
   ADAPTION_AI_BASE_URL: z.string().optional().default('https://api.adaptionlab.com/v1'),

@@ -129,7 +129,9 @@ export const requireElderAccess = (
 
       const elderId = getElderId(req);
       if (!elderId) {
-        return next();
+        return next(
+          ApiError.badRequest('Missing required elder identification parameter for access check.')
+        );
       }
 
       try {

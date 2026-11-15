@@ -38,6 +38,11 @@ export interface IMedicationRepository {
     notes?: string | null;
   }): Promise<MedicationLog>;
   findRecentTakenLog(medicationId: string, since: Date): Promise<MedicationLog | null>;
+  findExistingSlotLog(
+    medicationId: string,
+    scheduledFor: Date,
+    windowMinutes?: number
+  ): Promise<MedicationLog | null>;
   findTodayLogs(
     elderProfileId: string,
     startOfDay: Date,
@@ -151,6 +156,25 @@ export class InMemoryMedicationRepository implements IMedicationRepository {
         log.status === LogStatus.TAKEN &&
         log.takenAt &&
         log.takenAt >= since
+      ) {
+        return log;
+      }
+    }
+    return null;
+  }
+
+  async findExistingSlotLog(
+    medicationId: string,
+    scheduledFor: Date,
+    windowMinutes = 30
+  ): Promise<MedicationLog | null> {
+    const windowMs = windowMinutes * 60 * 1000;
+    const targetTime = scheduledFor.getTime();
+    for (const log of this.logs.values()) {
+      if (
+        log.medicationId === medicationId &&
+        log.status === LogStatus.TAKEN &&
+        Math.abs(log.scheduledFor.getTime() - targetTime) <= windowMs
       ) {
         return log;
       }
@@ -290,6 +314,26 @@ export class PrismaMedicationRepository implements IMedicationRepository {
         takenAt: { gte: since }
       },
       orderBy: { takenAt: 'desc' }
+    });
+  }
+
+  async findExistingSlotLog(
+    medicationId: string,
+    scheduledFor: Date,
+    windowMinutes = 30
+  ): Promise<MedicationLog | null> {
+    const windowMs = windowMinutes * 60 * 1000;
+    const startTime = new Date(scheduledFor.getTime() - windowMs);
+    const endTime = new Date(scheduledFor.getTime() + windowMs);
+    return prisma.medicationLog.findFirst({
+      where: {
+        medicationId,
+        status: LogStatus.TAKEN,
+        scheduledFor: {
+          gte: startTime,
+          lte: endTime
+        }
+      }
     });
   }
 

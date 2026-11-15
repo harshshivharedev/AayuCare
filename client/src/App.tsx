@@ -4,6 +4,7 @@ import { useLanguage } from './context/LanguageContext';
 import { Navbar } from './components/Navbar';
 import { AuthModal } from './components/AuthModal';
 import { PairElderModal } from './components/PairElderModal';
+import { CaregiverOnboarding } from './components/caregiver/CaregiverOnboarding';
 import { VisualPillbox } from './components/elder/VisualPillbox';
 import { MedicineStudio } from './components/caregiver/MedicineStudio';
 import { DoctorAppointments } from './components/caregiver/DoctorAppointments';
@@ -22,7 +23,7 @@ import {
 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const { user, elderProfile, activeMode, setActiveMode, activeElder } = useAuth();
+  const { user, elderProfile, activeMode, setActiveMode, activeElder, linkedElders } = useAuth();
   const { language, t } = useLanguage();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isPairOpen, setIsPairOpen] = useState(false);
@@ -85,6 +86,9 @@ export const App: React.FC = () => {
             {/* Elder Mode Visual Pillbox (Phase F2 Complete) */}
             <VisualPillbox />
           </div>
+        ) : !activeElder && linkedElders.length === 0 ? (
+          /* CAREGIVER ONBOARDING FLOW: Guided Pairing when no elder is linked yet */
+          <CaregiverOnboarding onOpenAuth={() => setIsAuthOpen(true)} />
         ) : (
           /* CAREGIVER DASHBOARD MODE */
           <div className="space-y-4 sm:space-y-6">

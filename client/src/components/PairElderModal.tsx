@@ -45,7 +45,7 @@ export const PairElderModal: React.FC<PairElderModalProps> = ({ isOpen, onClose 
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900">Pair with Elder</h3>
-              <p className="text-[11px] text-slate-500">Enter the 6-character code</p>
+              <p className="text-[11px] text-slate-500">Enter Elder's CarePasscode (e.g. CARE-8421)</p>
             </div>
           </div>
           <button
@@ -84,7 +84,7 @@ export const PairElderModal: React.FC<PairElderModalProps> = ({ isOpen, onClose 
               className="w-full text-center font-mono font-bold tracking-widest text-base py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent uppercase placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-xs"
             />
             <p className="text-[11px] text-slate-400 mt-1">
-              Find this 6-character code at the top of the Elder's screen.
+              Find this CarePasscode on Dada Ji's screen header (e.g. CARE-8421).
             </p>
           </div>
 

@@ -40,6 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
     const storedElder = localStorage.getItem('elderProfile');
+    const storedActiveElder = localStorage.getItem('activeElder');
     const storedMode = localStorage.getItem('activeMode') as 'ELDER' | 'CAREGIVER' | null;
 
     if (token && storedUser) {
@@ -49,7 +50,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (storedElder) {
           const parsedElder = JSON.parse(storedElder);
           setElderProfile(parsedElder);
-          setActiveElder(parsedElder);
+          if (!storedActiveElder) {
+            setActiveElder(parsedElder);
+          }
+        }
+        if (storedActiveElder) {
+          try {
+            setActiveElder(JSON.parse(storedActiveElder));
+          } catch {}
         }
         if (storedMode) {
           setActiveMode(storedMode);
@@ -71,13 +79,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user]);
 
+  const handleSetActiveElder = (elder: ElderProfile) => {
+    setActiveElder(elder);
+    localStorage.setItem('activeElderId', elder.id);
+    localStorage.setItem('activeElder', JSON.stringify(elder));
+  };
+
   const refreshLinkedElders = async () => {
     try {
       const res = await ApiClient.get<ElderProfile[]>('/care-circle/elders');
-      if (res.data) {
+      if (res.data && res.data.length > 0) {
         setLinkedElders(res.data);
-        if (res.data.length > 0 && !activeElder) {
+        const savedElderId = localStorage.getItem('activeElderId');
+        const matched = savedElderId ? res.data.find((e) => e.id === savedElderId) : null;
+        if (matched) {
+          setActiveElder(matched);
+        } else if (!activeElder) {
           setActiveElder(res.data[0]);
+          localStorage.setItem('activeElderId', res.data[0].id);
+          localStorage.setItem('activeElder', JSON.stringify(res.data[0]));
         }
       }
     } catch {
@@ -94,6 +114,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setElderProfile(data.elderProfile);
       setActiveElder(data.elderProfile);
       localStorage.setItem('elderProfile', JSON.stringify(data.elderProfile));
+      localStorage.setItem('activeElder', JSON.stringify(data.elderProfile));
+      localStorage.setItem('activeElderId', data.elderProfile.id);
     }
 
     const defaultMode = data.user.role === 'ELDERLY' ? 'ELDER' : 'CAREGIVER';
@@ -137,7 +159,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       carePasscode
     });
     if (res.data) {
-      setActiveElder(res.data.elder);
+      handleSetActiveElder(res.data.elder);
       await refreshLinkedElders();
       return res.data;
     }
@@ -149,7 +171,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('activeMode', mode);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await ApiClient.post('/auth/logout');
+    } catch (err) {
+      console.warn('Backend logout notification failed:', err);
+    }
     localStorage.clear();
     setUser(null);
     setElderProfile(null);
@@ -172,7 +199,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         googleLogin,
         pairWithElder,
         setActiveMode: changeMode,
-        setActiveElder,
+        setActiveElder: handleSetActiveElder,
         refreshLinkedElders,
         logout
       }}

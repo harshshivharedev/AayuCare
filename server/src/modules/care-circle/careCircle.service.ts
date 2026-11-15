@@ -18,7 +18,7 @@ export class CareCircleService {
 
     if (!elder) {
       throw ApiError.notFound(
-        `Invalid CarePasscode [${normalizedCode}]. Please check the 6-character code on your elder's screen.`
+        `Invalid CarePasscode [${normalizedCode}]. Please check the CarePasscode shown on the elder's screen (e.g. CARE-8421).`
       );
     }
 

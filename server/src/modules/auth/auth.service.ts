@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
@@ -59,7 +60,7 @@ export class AuthService implements IAuthService {
     // If registering as an Elder, automatically generate their unique 6-character CarePasscode
     if (role === 'ELDERLY') {
       try {
-        const randomCode = `CARE-${Math.floor(1000 + Math.random() * 9000)}`;
+        const randomCode = `CARE-${crypto.randomInt(100000, 999999)}`;
         elderProfile = await this.authRepository.createElderProfile({
           userId: newUser.id,
           fullName: newUser.name,
@@ -131,7 +132,10 @@ export class AuthService implements IAuthService {
     let avatarUrl: string | undefined;
 
     try {
-      if (ENV.NODE_ENV === 'test' && input.idToken.startsWith('mock-google-token')) {
+      if (
+        (ENV.NODE_ENV === 'test' || process.env.NODE_ENV === 'test') &&
+        input.idToken.startsWith('mock-google-token')
+      ) {
         // Deterministic mock test tokens - strictly limited to test environments
         googleEmail = 'google.user@example.com';
         googleName = 'Google Authenticated User';
@@ -187,7 +191,7 @@ export class AuthService implements IAuthService {
       try {
         let profile = await this.authRepository.findElderProfileByUserId(user.id);
         if (!profile) {
-          const randomCode = `CARE-${Math.floor(1000 + Math.random() * 9000)}`;
+          const randomCode = `CARE-${crypto.randomInt(100000, 999999)}`;
           profile = await this.authRepository.createElderProfile({
             userId: user.id,
             fullName: user.name,

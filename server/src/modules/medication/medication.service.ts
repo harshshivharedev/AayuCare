@@ -244,6 +244,14 @@ export class MedicationService {
       scheduledFor = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
     }
 
+    // 2. Duplicate Slot Guard: Prevent multiple confirmations for the exact same scheduled slot
+    const existingSlotLog = await this.repo.findExistingSlotLog(med.id, scheduledFor, 30);
+    if (existingSlotLog) {
+      throw ApiError.badRequest(
+        `This scheduled dose for ${med.name} is already confirmed as taken.`
+      );
+    }
+
     const log = await this.repo.createLog({
       medicationId: med.id,
       scheduledFor,

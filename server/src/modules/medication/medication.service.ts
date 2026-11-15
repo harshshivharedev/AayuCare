@@ -137,9 +137,10 @@ export class MedicationService {
           if (l.medicationId !== med.id) return false;
           const logHour = l.scheduledFor.getHours();
           const logMin = l.scheduledFor.getMinutes();
+          // Precise slot match: exact hour/minute or within 30 minutes of this schedule slot
           return (
             (logHour === hour && logMin === minute) ||
-            Math.abs(logHour * 60 + logMin - schedMinutes) <= 240
+            Math.abs(logHour * 60 + logMin - schedMinutes) <= 30
           );
         });
 

@@ -20,7 +20,20 @@ export interface ClinicalBriefcaseResponse {
     totalTakenDoses: number;
     missedDosesCount: number;
   };
+  adherence?: {
+    ratePercent: number;
+    totalScheduledDoses: number;
+    takenDoses: number;
+    missedDoses: number;
+    onTimeRatePercent: number;
+  };
+  reportingWindowDays?: number;
   executiveSummary: string;
+  clinicalSummary?: {
+    executiveSummary: string;
+    identifiedRisks: string[];
+    questionsForDoctor: string[];
+  };
   activeRegimen: {
     id: string;
     name: string;
@@ -30,12 +43,14 @@ export interface ClinicalBriefcaseResponse {
     criticality: string;
     instructions: string | null;
   }[];
+  activeRegimens?: any[];
   missedDosesLog: {
     medicationName: string;
     dosage: string;
     scheduledFor: Date;
     status: string;
   }[];
+  recentLogs?: any[];
   recentAppointments: Appointment[];
   generatedAt: string;
 }
@@ -129,6 +144,35 @@ export class AppointmentService {
         : 'Zero missed doses logged.'
     } Currently active on ${rawData.activeMedications.length} medication regimen(s).`;
 
+    const adherence = {
+      ratePercent: adherenceRate,
+      totalScheduledDoses: totalScheduled,
+      takenDoses: totalTaken,
+      missedDoses: missedDosesCount,
+      onTimeRatePercent: adherenceRate
+    };
+
+    const activeRegimensList = rawData.activeMedications.map((m) => ({
+      id: m.id,
+      name: m.name,
+      dosage: m.dosage,
+      scheduleTimes: m.scheduleTimes,
+      mealRelation: m.mealRelation,
+      criticality: m.criticality,
+      instructions: m.instructions
+    }));
+
+    const clinicalSummary = {
+      executiveSummary,
+      identifiedRisks: missedDosesCount > 0
+        ? [`${missedDosesCount} missed dose(s) detected in the last ${days} days.`]
+        : ['Consistent morning on-time medication adherence maintained.'],
+      questionsForDoctor: [
+        `Review dosage efficacy given current 30-day adherence.`,
+        `Confirm if overnight fasting blood work is indicated for next review.`
+      ]
+    };
+
     return {
       elder: rawData.elder,
       metrics: {
@@ -139,20 +183,22 @@ export class AppointmentService {
         totalTakenDoses: totalTaken,
         missedDosesCount
       },
+      adherence,
+      reportingWindowDays: days,
       executiveSummary,
-      activeRegimen: rawData.activeMedications.map((m) => ({
-        id: m.id,
-        name: m.name,
-        dosage: m.dosage,
-        scheduleTimes: m.scheduleTimes,
-        mealRelation: m.mealRelation,
-        criticality: m.criticality,
-        instructions: m.instructions
-      })),
+      clinicalSummary,
+      activeRegimen: activeRegimensList,
+      activeRegimens: activeRegimensList,
       missedDosesLog: rawData.missedDoses.map((l) => ({
         medicationName: l.medicationName,
         dosage: l.dosage,
         scheduledFor: l.scheduledFor,
+        status: l.status
+      })),
+      recentLogs: rawData.missedDoses.map((l) => ({
+        medicationName: l.medicationName,
+        scheduledFor: l.scheduledFor.toISOString(),
+        takenAt: null,
         status: l.status
       })),
       recentAppointments: rawData.recentAppointments,

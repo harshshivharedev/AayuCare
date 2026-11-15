@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { AlertController } from './alert.controller';
 import { AlertService } from './alert.service';
 import { PrismaAlertRepository } from './alert.repository';
-import { authenticateJwt, requireRole } from '../../middlewares/auth.middleware';
+import { authenticateJwt, requireRole, requireElderAccess } from '../../middlewares/auth.middleware';
 import { validateRequest } from '../../middlewares/validate.middleware';
 import { createAlertSchema, evaluateMissedSchema } from './alert.schema';
 
@@ -15,6 +15,7 @@ const controller = new AlertController(service);
 router.get(
   '/elder/:elderId',
   authenticateJwt,
+  requireElderAccess(),
   controller.getAlertsByElder
 );
 

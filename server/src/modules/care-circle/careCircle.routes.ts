@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { CareCircleController } from './careCircle.controller';
 import { CareCircleService } from './careCircle.service';
 import { PrismaCareCircleRepository } from './careCircle.repository';
-import { authenticateJwt, requireRole } from '../../middlewares/auth.middleware';
+import { authenticateJwt, requireRole, requireElderAccess } from '../../middlewares/auth.middleware';
 import { validateRequest } from '../../middlewares/validate.middleware';
 import { pairCareCircleSchema, updateElderProfileSchema } from './careCircle.schema';
 
@@ -32,6 +32,7 @@ router.get(
 router.get(
   '/members/:elderId',
   authenticateJwt,
+  requireElderAccess(),
   controller.getMembers
 );
 
@@ -40,6 +41,7 @@ router.patch(
   '/elder/:elderId',
   authenticateJwt,
   requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
+  requireElderAccess(),
   validateRequest(updateElderProfileSchema),
   controller.updateProfile
 );

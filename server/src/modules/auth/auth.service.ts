@@ -39,6 +39,10 @@ export class AuthService implements IAuthService {
       throw ApiError.badRequest('User with this email already exists');
     }
 
+    if ((input.role as string) === 'ADMIN') {
+      throw ApiError.forbidden('Administrator accounts cannot be created via public registration');
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(input.password, salt);
     const role = (input.role as UserRole) || 'ELDERLY';
@@ -127,8 +131,8 @@ export class AuthService implements IAuthService {
     let avatarUrl: string | undefined;
 
     try {
-      if (input.idToken.startsWith('mock-google-token') || ENV.NODE_ENV === 'test') {
-        // Deterministic mock test tokens
+      if (ENV.NODE_ENV === 'test' && input.idToken.startsWith('mock-google-token')) {
+        // Deterministic mock test tokens - strictly limited to test environments
         googleEmail = 'google.user@example.com';
         googleName = 'Google Authenticated User';
         googleId = 'google-sub-mock-12345';

@@ -10,8 +10,8 @@ export const createAlertSchema = z.object({
 });
 
 export const evaluateMissedSchema = z.object({
-  elderProfileId: z.string().uuid('Invalid Elder Profile ID'),
-  thresholdMinutes: z.number().int().min(1).max(240).default(45)
+  elderProfileId: z.string().optional(),
+  thresholdMinutes: z.number().int().min(1).max(240).optional().default(45)
 });
 
 export type CreateAlertInput = z.input<typeof createAlertSchema>;

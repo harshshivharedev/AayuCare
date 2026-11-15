@@ -37,10 +37,35 @@ export class AlertController {
 
   evaluateMissed = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { elderProfileId, thresholdMinutes } = req.body;
+      let { elderProfileId, thresholdMinutes } = req.body;
+
+      if (!elderProfileId && req.user) {
+        const { prisma } = await import('../../config/db');
+        const profile = await prisma.elderProfile.findFirst({
+          where: {
+            OR: [
+              { userId: req.user.id },
+              { careCircleMembers: { some: { userId: req.user.id } } }
+            ]
+          }
+        });
+        elderProfileId = profile?.id;
+      }
+
+      if (!elderProfileId) {
+        res.status(200).json(
+          ApiResponse.success('No active elder profile linked to evaluate.', {
+            overdueDosesCount: 0,
+            escalatedAlertsCount: 0,
+            escalatedAlerts: []
+          })
+        );
+        return;
+      }
+
       const result = await this.service.evaluateAndEscalateMissedDoses(
         elderProfileId,
-        thresholdMinutes
+        thresholdMinutes || 45
       );
 
       res

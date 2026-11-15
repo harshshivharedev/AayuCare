@@ -13,7 +13,7 @@ services:
       - key: PORT
         value: 10000
       - key: CLIENT_URL
-        value: '*'
+        value: https://aayucare-1.onrender.com
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET

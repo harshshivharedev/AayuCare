@@ -116,13 +116,21 @@ export const AlertsFeed: React.FC = () => {
     setEvaluating(true);
     setActionNotice(null);
     try {
-      const res = await ApiClient.post<any>('/alerts/evaluate-missed');
-      setActionNotice(
-        `Overdue dose evaluation completed: ${res.data?.escalatedCount || 0} alerts evaluated.`
-      );
-      await fetchAlerts();
+      const targetId = activeElder?.id || elderProfile?.id;
+      const res = await ApiClient.post<any>('/alerts/evaluate-missed', {
+        elderProfileId: targetId,
+        thresholdMinutes: 45
+      });
+      if (res.success) {
+        setActionNotice(
+          res.message || `Overdue dose evaluation completed: ${res.data?.escalatedAlertsCount || 0} critical alerts escalated.`
+        );
+        await fetchAlerts();
+      } else {
+        throw new Error(res.message || 'Evaluation scan failed');
+      }
     } catch (err: any) {
-      setActionNotice('Overdue check completed. All doses on schedule.');
+      setActionNotice(err?.message || 'Error running 45-minute evaluation scan.');
     } finally {
       setEvaluating(false);
     }

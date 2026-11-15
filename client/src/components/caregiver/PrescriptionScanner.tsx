@@ -98,36 +98,8 @@ export const PrescriptionScanner: React.FC<PrescriptionScannerProps> = ({
       }
     } catch (err: any) {
       console.error('Scan error:', err);
-      // Fallback: parse client-side if offline mock
-      const fallbackMeds: ExtractedMedication[] = [
-        {
-          name: 'Telmisartan 40mg',
-          dosage: '1 Tablet',
-          frequency: 'DAILY',
-          scheduleTimes: ['08:30'],
-          mealRelation: 'AFTER_MEAL',
-          criticality: 'HIGH_RISK',
-          dietaryGuidelines: ['Avoid citrus and grapefruit juice', 'Take with warm water'],
-          instructionsHindi: 'नाश्ते के 15 मिनट बाद 1 गोली पानी से लें'
-        },
-        {
-          name: 'Atorvastatin 10mg',
-          dosage: '1 Tablet',
-          frequency: 'DAILY',
-          scheduleTimes: ['21:30'],
-          mealRelation: 'AFTER_MEAL',
-          criticality: 'ROUTINE',
-          dietaryGuidelines: ['Take before sleeping'],
-          instructionsHindi: 'सोने से पहले 1 गोली लें'
-        }
-      ];
-      setResult({
-        doctorName: 'Dr. Arvind Sharma, MD',
-        clinic: 'Max Hospital',
-        diagnoses: ['Essential Hypertension', 'Dyslipidemia'],
-        medications: fallbackMeds,
-        generalDietaryAdvice: ['Low sodium diet', 'Avoid grapefruit / citrus juices with BP medicines']
-      });
+      setError(err?.message || 'Failed to scan prescription. Please verify text clarity or enter medications manually.');
+      setResult(null);
     } finally {
       setLoading(false);
     }
@@ -161,6 +133,14 @@ export const PrescriptionScanner: React.FC<PrescriptionScannerProps> = ({
       </div>
 
       <div className="p-4 sm:p-5 space-y-4">
+        {/* Clinical Safety Disclaimer */}
+        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-start gap-2 text-[11px] text-slate-500">
+          <Info className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
+          <span>
+            <b>Clinical Safety Disclaimer:</b> Adaption AI extraction provides automated transcription and dietary cross-checks for caregiver convenience. Always confirm against the physical prescription paper or consult the prescribing physician before administering medications.
+          </span>
+        </div>
+
         {/* Sample Prescription Presets */}
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">

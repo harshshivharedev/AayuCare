@@ -54,9 +54,22 @@ export class HybridRedisCacheService implements ICacheService {
   constructor() {
     if (ENV.REDIS_URL && ENV.REDIS_URL.trim() !== '') {
       try {
-        this.redis = new Redis(ENV.REDIS_URL, {
+        let cleanUrl = ENV.REDIS_URL.trim();
+        // If user copied the CLI format: redis-cli --tls -u redis://...
+        if (cleanUrl.includes('redis-cli')) {
+          const match = cleanUrl.match(/(rediss?:\/\/[^\s]+)/);
+          if (match) {
+            cleanUrl = match[1];
+          }
+        }
+        // If Upstash or TLS provider, ensure rediss:// protocol
+        if (cleanUrl.startsWith('redis://') && cleanUrl.includes('upstash.io')) {
+          cleanUrl = cleanUrl.replace('redis://', 'rediss://');
+        }
+
+        this.redis = new Redis(cleanUrl, {
           maxRetriesPerRequest: 1,
-          connectTimeout: 2000,
+          connectTimeout: 3000,
           lazyConnect: true
         });
 

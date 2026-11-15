@@ -34,12 +34,18 @@ app.use(
 );
 
 // 3. CORS
-const allowedOrigins = [
+const knownOrigins = [
+  'https://aayucare-1.onrender.com',
   ENV.CLIENT_URL.replace(/\/$/, '')
 ];
 
-if (ENV.NODE_ENV === 'development') {
-  allowedOrigins.push('http://localhost:5173', 'http://127.0.0.1:5173');
+if (ENV.NODE_ENV !== 'production') {
+  knownOrigins.push(
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:5000',
+    'http://localhost:3000'
+  );
 }
 
 app.use(
@@ -50,13 +56,12 @@ app.use(
         return callback(null, true);
       }
 
-      if (
-        ENV.CLIENT_URL === '*' ||
-        allowedOrigins.includes(origin) ||
-        origin.endsWith('.vercel.app') ||
-        origin.includes('localhost') ||
-        origin.includes('127.0.0.1')
-      ) {
+      const isAllowed =
+        knownOrigins.includes(origin) ||
+        (ENV.NODE_ENV !== 'production' &&
+          (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')));
+
+      if (isAllowed) {
         return callback(null, true);
       }
 

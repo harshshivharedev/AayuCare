@@ -6,6 +6,11 @@ import bcrypt from 'bcryptjs';
 import { prisma } from './config/db';
 
 async function main() {
+  if (process.env.NODE_ENV === 'production' && process.env.ALLOW_PROD_SEED !== 'true') {
+    console.log('⚠️ Skipping database seed in production (ALLOW_PROD_SEED not set).');
+    return;
+  }
+
   console.log('🌱 Starting AayuCare Database Seeding...');
 
   // 1. Create or Find Dada Ji (Elderly User)

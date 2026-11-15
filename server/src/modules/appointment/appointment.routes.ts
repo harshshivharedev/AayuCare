@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { AppointmentController } from './appointment.controller';
 import { AppointmentService } from './appointment.service';
 import { PrismaAppointmentRepository } from './appointment.repository';
-import { authenticateJwt, requireRole } from '../../middlewares/auth.middleware';
+import { authenticateJwt, requireRole, requireElderAccess } from '../../middlewares/auth.middleware';
 import { validateRequest } from '../../middlewares/validate.middleware';
 import { createAppointmentSchema, updateAppointmentSchema } from './appointment.schema';
 
@@ -16,6 +16,7 @@ router.post(
   '/',
   authenticateJwt,
   requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
+  requireElderAccess(),
   validateRequest(createAppointmentSchema),
   controller.create
 );
@@ -24,6 +25,7 @@ router.post(
 router.get(
   '/briefcase/:elderId',
   authenticateJwt,
+  requireElderAccess(),
   controller.getClinicalBriefcase
 );
 
@@ -31,6 +33,7 @@ router.get(
 router.get(
   '/upcoming/:elderId',
   authenticateJwt,
+  requireElderAccess(),
   controller.getUpcoming
 );
 
@@ -38,6 +41,7 @@ router.get(
 router.get(
   '/elder/:elderId',
   authenticateJwt,
+  requireElderAccess(),
   controller.getByElder
 );
 

@@ -3,7 +3,7 @@ import { MedicationController } from './medication.controller';
 import { MedicationService } from './medication.service';
 import { PrismaMedicationRepository } from './medication.repository';
 import { cacheService } from '../../infrastructure/cache.service';
-import { authenticateJwt, requireRole } from '../../middlewares/auth.middleware';
+import { authenticateJwt, requireRole, requireElderAccess } from '../../middlewares/auth.middleware';
 import { validateRequest } from '../../middlewares/validate.middleware';
 import {
   createMedicationSchema,
@@ -21,6 +21,7 @@ router.post(
   '/',
   authenticateJwt,
   requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
+  requireElderAccess(),
   validateRequest(createMedicationSchema),
   controller.create
 );
@@ -29,6 +30,7 @@ router.post(
 router.get(
   '/today/:elderId',
   authenticateJwt,
+  requireElderAccess(),
   controller.getTodayPillbox
 );
 
@@ -44,6 +46,7 @@ router.post(
 router.get(
   '/adherence/:elderId',
   authenticateJwt,
+  requireElderAccess(),
   controller.getAdherence
 );
 
@@ -51,6 +54,7 @@ router.get(
 router.get(
   '/elder/:elderId',
   authenticateJwt,
+  requireElderAccess(),
   controller.getByElder
 );
 

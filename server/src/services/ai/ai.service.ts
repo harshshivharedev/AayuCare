@@ -3,6 +3,8 @@ import { AdaptionAiProvider } from './adaption.provider';
 import { GeminiAiProvider } from './gemini.provider';
 import { MockAiProvider } from './mock.provider';
 import { logger } from '../../utils/logger';
+import { ENV } from '../../config/env';
+import { ApiError } from '../../utils/apiError';
 
 export class AiService {
   constructor(
@@ -42,7 +44,10 @@ export class AiService {
       }
     }
 
-    // 3. Deterministic Offline Fallback
+    // 3. Deterministic Offline Fallback (Only in non-production / test mode)
+    if (ENV.NODE_ENV === 'production') {
+      throw ApiError.internal('Clinical AI extraction services temporarily unavailable. Please enter medication manually.');
+    }
     const text = await this.fallbackProvider.generateText(prompt, options);
     const latencyMs = Date.now() - startTime;
     return { result: text, provider: this.fallbackProvider.name, latencyMs };
@@ -79,7 +84,10 @@ export class AiService {
       }
     }
 
-    // 3. Fallback
+    // 3. Fallback (Only in non-production / test mode)
+    if (ENV.NODE_ENV === 'production') {
+      throw ApiError.internal('Clinical AI extraction services temporarily unavailable. Please enter medication manually.');
+    }
     const data = await this.fallbackProvider.generateStructuredJson<T>(prompt, options);
     const latencyMs = Date.now() - startTime;
     return { result: data, provider: this.fallbackProvider.name, latencyMs };

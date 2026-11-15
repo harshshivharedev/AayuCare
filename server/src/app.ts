@@ -14,6 +14,7 @@ import authRoutes from './modules/auth/auth.routes';
 import careCircleRoutes from './modules/care-circle/careCircle.routes';
 import medicationRoutes from './modules/medication/medication.routes';
 import uploadRoutes from './modules/upload/upload.routes';
+import appointmentRoutes from './modules/appointment/appointment.routes';
 
 const app: Application = express();
 
@@ -69,6 +70,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/care-circle', careCircleRoutes);
 app.use('/api/medications', medicationRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 // 7. 404 Route Handler
 app.use((req: Request, res: Response, next: NextFunction) => {

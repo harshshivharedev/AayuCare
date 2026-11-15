@@ -161,3 +161,5 @@ npm run dev
 * **Submission Portal:** Hack2Skill Catalyst x PromptWars 2026
 * **Master Architecture Plan:** [`AayuCare_Master_Architecture_and_Planning.pdf`](file:///c:/Users/shivh/OneDrive/Desktop/Hackhathon/AayuCare_Master_Architecture_and_Planning.pdf)
 * **Functional Requirements Document:** [`AayuCare_Functional_Requirements.pdf`](file:///c:/Users/shivh/OneDrive/Desktop/Hackhathon/AayuCare_Functional_Requirements.pdf)
+#   A a y u C a r e  
+ 

@@ -6,6 +6,8 @@ import { AuthModal } from './components/AuthModal';
 import { PairElderModal } from './components/PairElderModal';
 import { VisualPillbox } from './components/elder/VisualPillbox';
 import { MedicineStudio } from './components/caregiver/MedicineStudio';
+import { DoctorAppointments } from './components/caregiver/DoctorAppointments';
+import { AlertsFeed } from './components/caregiver/AlertsFeed';
 import {
   HeartPulse,
   Pill,
@@ -13,6 +15,7 @@ import {
   AlertTriangle,
   FileText,
   ShieldCheck,
+  ShieldAlert,
   CheckCircle2,
   Sparkles,
   PhoneCall
@@ -23,6 +26,7 @@ export const App: React.FC = () => {
   const { language, t } = useLanguage();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isPairOpen, setIsPairOpen] = useState(false);
+  const [caregiverTab, setCaregiverTab] = useState<'MEDICATIONS' | 'APPOINTMENTS' | 'ALERTS'>('MEDICATIONS');
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
@@ -153,8 +157,49 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            {/* Caregiver Medicine Studio & AI Prescription Scanner (Phase F3) */}
-            <MedicineStudio />
+            {/* Caregiver Navigation Tabs (Phase F3 & F4) */}
+            <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/80 pb-3">
+              <button
+                onClick={() => setCaregiverTab('MEDICATIONS')}
+                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  caregiverTab === 'MEDICATIONS'
+                    ? 'bg-teal-600 text-white shadow-xs'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+                }`}
+              >
+                <Pill className="w-3.5 h-3.5" />
+                <span>Medication Studio & AI Scanner</span>
+              </button>
+
+              <button
+                onClick={() => setCaregiverTab('APPOINTMENTS')}
+                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  caregiverTab === 'APPOINTMENTS'
+                    ? 'bg-teal-600 text-white shadow-xs'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+                }`}
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Doctor Visits & 30-Day Briefcase</span>
+              </button>
+
+              <button
+                onClick={() => setCaregiverTab('ALERTS')}
+                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  caregiverTab === 'ALERTS'
+                    ? 'bg-teal-600 text-white shadow-xs'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+                }`}
+              >
+                <ShieldAlert className="w-3.5 h-3.5" />
+                <span>Safety Alerts Feed</span>
+              </button>
+            </div>
+
+            {/* Tab Viewport */}
+            {caregiverTab === 'MEDICATIONS' && <MedicineStudio />}
+            {caregiverTab === 'APPOINTMENTS' && <DoctorAppointments />}
+            {caregiverTab === 'ALERTS' && <AlertsFeed />}
           </div>
         )}
       </main>

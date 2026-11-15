@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from './context/AuthContext';
+import { useLanguage } from './context/LanguageContext';
 import { Navbar } from './components/Navbar';
 import { AuthModal } from './components/AuthModal';
 import { PairElderModal } from './components/PairElderModal';
+import { VisualPillbox } from './components/elder/VisualPillbox';
 import {
   HeartPulse,
   Pill,
@@ -17,6 +19,7 @@ import {
 
 export const App: React.FC = () => {
   const { user, elderProfile, activeMode, setActiveMode, activeElder } = useAuth();
+  const { language, t } = useLanguage();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isPairOpen, setIsPairOpen] = useState(false);
 
@@ -41,13 +44,10 @@ export const App: React.FC = () => {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    <span>Namaste, {elderProfile?.fullName || user?.name || 'Dada Ji'}</span>
-                    <span className="text-sm font-hindi text-teal-700 font-semibold bg-teal-50 px-2 py-0.5 rounded-md">
-                      नमस्ते
-                    </span>
+                    <span>{t.greetingNamaste}, {elderProfile?.fullName || user?.name || 'Dada Ji'}</span>
                   </h1>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    {new Date().toLocaleDateString('en-IN', {
+                    {new Date().toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',
@@ -57,43 +57,28 @@ export const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* SOS Emergency Call Button */}
+              {/* SOS Emergency Call Button & Passcode Pill */}
               <div className="flex items-center gap-3">
+                {elderProfile && (
+                  <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700">
+                    <span>{t.pairCodeLabel}:</span>
+                    <span className="font-mono bg-white px-2 py-0.5 rounded border border-slate-300 font-bold text-teal-800">
+                      {elderProfile.carePasscode}
+                    </span>
+                  </div>
+                )}
                 <a
                   href={`tel:${elderProfile?.emergencyContact || '+919876543210'}`}
                   className="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-sm shadow-rose-600/20"
                 >
                   <PhoneCall className="w-4 h-4" />
-                  <span>Emergency SOS Call</span>
+                  <span>{t.emergencySos}</span>
                 </a>
               </div>
             </div>
 
-            {/* Elder Mode Placeholder / Ready to load Pillbox */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center space-y-4 shadow-xs">
-              <div className="w-14 h-14 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center mx-auto border border-teal-200">
-                <Pill className="w-7 h-7" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">
-                  Phase F1 Connected: Foundation & Role Switcher Ready
-                </h3>
-                <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
-                  Dada Ji's Mode is active. Next in <b>Phase F2</b>, we are rendering the real-time{' '}
-                  <b>Today's Visual Pillbox</b> with actual tablet photos, Caretaker's loving voice guidance, and the giant{' '}
-                  <b>"Maine Kha Li"</b> confirmation button.
-                </p>
-              </div>
-
-              {elderProfile && (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-xs font-semibold">
-                  <span>Your CarePasscode:</span>
-                  <span className="font-mono bg-white px-2 py-0.5 rounded border border-teal-300 font-bold">
-                    {elderProfile.carePasscode}
-                  </span>
-                </div>
-              )}
-            </div>
+            {/* Elder Mode Visual Pillbox (Phase F2 Complete) */}
+            <VisualPillbox />
           </div>
         ) : (
           /* CAREGIVER DASHBOARD MODE */

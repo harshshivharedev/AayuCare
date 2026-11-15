@@ -1,14 +1,13 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   HeartPulse,
-  UserCheck,
-  ShieldAlert,
   LogOut,
   LogIn,
   KeyRound,
   Users,
-  ChevronDown
+  Languages
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -27,6 +26,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPair }) => {
     setActiveElder,
     logout
   } = useAuth();
+
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
@@ -63,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPair }) => {
               }`}
             >
               <span>👴</span>
-              <span>Dada Ji View</span>
+              <span>{t.dadaJiView}</span>
             </button>
             <button
               onClick={() => setActiveMode('CAREGIVER')}
@@ -74,17 +75,27 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPair }) => {
               }`}
             >
               <Users className="w-3.5 h-3.5 text-teal-600" />
-              <span>Caretaker View</span>
+              <span>{t.caretakerView}</span>
             </button>
           </div>
 
           {/* 3. Right Action Area */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Language Switcher Pill */}
+            <button
+              onClick={() => setLanguage(language === 'hi' ? 'en' : 'hi')}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-xs transition"
+              title={language === 'hi' ? 'Switch to English' : 'हिंदी में बदलें'}
+            >
+              <Languages className="w-3.5 h-3.5 text-teal-600" />
+              <span>{language === 'hi' ? '🇮🇳 हिंदी' : '🇬🇧 English'}</span>
+            </button>
+
             {/* If in Elder mode, show Elder's Passcode pill so caregiver can link */}
             {activeMode === 'ELDER' && elderProfile && (
               <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-50 border border-teal-200 text-teal-800 text-xs font-medium">
                 <KeyRound className="w-3.5 h-3.5 text-teal-600" />
-                <span>Pair Code:</span>
+                <span>{t.pairCodeLabel}:</span>
                 <span className="font-bold tracking-wider font-mono bg-white px-1.5 py-0.5 rounded border border-teal-300">
                   {elderProfile.carePasscode}
                 </span>

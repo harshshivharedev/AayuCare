@@ -18,6 +18,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const googleClientId =
+      import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+      '96660039490-oq5hndo6huv6dldb7k1tone961t80gdn.apps.googleusercontent.com';
+
+    if (isOpen && typeof window !== 'undefined' && (window as any).google?.accounts?.id) {
+      try {
+        (window as any).google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: async (response: any) => {
+            if (response?.credential) {
+              try {
+                setLoading(true);
+                await googleLogin(response.credential, role);
+                onClose();
+              } catch (err: any) {
+                setError(err.message || 'Google authentication failed');
+              } finally {
+                setLoading(false);
+              }
+            }
+          }
+        });
+      } catch (e) {
+        console.warn('Google accounts initialization:', e);
+      }
+    }
+  }, [isOpen, role]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,35 +95,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const googleClientId =
-      import.meta.env.VITE_GOOGLE_CLIENT_ID ||
-      '96660039490-oq5hndo6huv6dldb7k1tone961t80gdn.apps.googleusercontent.com';
-
-    if (isOpen && typeof window !== 'undefined' && (window as any).google?.accounts?.id) {
-      try {
-        (window as any).google.accounts.id.initialize({
-          client_id: googleClientId,
-          callback: async (response: any) => {
-            if (response?.credential) {
-              try {
-                setLoading(true);
-                await googleLogin(response.credential, role);
-                onClose();
-              } catch (err: any) {
-                setError(err.message || 'Google authentication failed');
-              } finally {
-                setLoading(false);
-              }
-            }
-          }
-        });
-      } catch (e) {
-        console.warn('Google accounts initialization:', e);
-      }
-    }
-  }, [isOpen, role]);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);

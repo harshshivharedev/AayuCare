@@ -16,6 +16,7 @@ import medicationRoutes from './modules/medication/medication.routes';
 import uploadRoutes from './modules/upload/upload.routes';
 import appointmentRoutes from './modules/appointment/appointment.routes';
 import alertRoutes from './modules/alert/alert.routes';
+import aiRoutes from './modules/ai/ai.routes';
 
 const app: Application = express();
 
@@ -73,6 +74,7 @@ app.use('/api/medications', medicationRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/alerts', alertRoutes);
+app.use('/api/ai', aiRoutes);
 
 // 7. 404 Route Handler
 app.use((req: Request, res: Response, next: NextFunction) => {

@@ -1,15 +1,22 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { aiService } from '../../services/ai/ai.service';
 import { validateRequest } from '../../middlewares/validate.middleware';
-import { aiAnalyzeSchema, scanPrescriptionSchema, dietaryCautionsSchema } from './ai.schema';
+import {
+  aiAnalyzeSchema,
+  scanPrescriptionSchema,
+  dietaryCautionsSchema,
+  verifyPillSchema
+} from './ai.schema';
 import { ApiResponse } from '../../utils/apiResponse';
 import { authRateLimiter } from '../../middlewares/rateLimiter.middleware';
+import { authenticateJwt } from '../../middlewares/auth.middleware';
 
 const router = Router();
 
-// Scan Prescription using Adaption AI (Primary) / Gemini (Secondary)
+// 1. Scan Prescription using Adaption AI (Primary) / Gemini (Secondary)
 router.post(
   '/scan-prescription',
+  authenticateJwt,
   authRateLimiter,
   validateRequest(scanPrescriptionSchema),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -52,7 +59,10 @@ Parse and extract all medication details, schedule times, meal relations, critic
       );
 
       res.status(200).json(
-        ApiResponse.success(`Prescription ingested successfully via [${execution.provider}]`, execution.result)
+        ApiResponse.success(
+          `Prescription ingested successfully via [${execution.provider}]`,
+          execution.result
+        )
       );
     } catch (error) {
       next(error);
@@ -60,9 +70,10 @@ Parse and extract all medication details, schedule times, meal relations, critic
   }
 );
 
-// Generate Dietary Cautions & Drug-Food Interactions
+// 2. Generate Dietary Cautions & Indian Drug-Food Interactions
 router.post(
   '/dietary-cautions',
+  authenticateJwt,
   authRateLimiter,
   validateRequest(dietaryCautionsSchema),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -85,7 +96,7 @@ Return raw structured JSON:
 }`;
 
       const prompt = `Patient Age: ${age} years
-Diagnosed Conditions: ${conditions.join(', ')}
+Diagnosed Conditions: ${(conditions || []).join(', ')}
 Medications: ${medicationNames.join(', ')}
 
 Analyze drug-nutrient interactions for an Indian diet and return tailored cautions.`;
@@ -97,7 +108,10 @@ Analyze drug-nutrient interactions for an Indian diet and return tailored cautio
       );
 
       res.status(200).json(
-        ApiResponse.success(`Dietary cautions generated via [${execution.provider}]`, execution.result)
+        ApiResponse.success(
+          `Dietary cautions generated via [${execution.provider}]`,
+          execution.result
+        )
       );
     } catch (error) {
       next(error);
@@ -105,9 +119,56 @@ Analyze drug-nutrient interactions for an Indian diet and return tailored cautio
   }
 );
 
-// General AI analysis endpoint
+// 3. Pill Strip Visual OCR Verification & Cross-Check
+router.post(
+  '/verify-pill',
+  authenticateJwt,
+  authRateLimiter,
+  validateRequest(verifyPillSchema),
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { expectedMedicationName, pillImageTextOrUrl } = req.body;
+
+      const systemInstruction = `You are AayuCare's Multimodal Pill Verification Safety Officer.
+Compare the detected tablet strip or pill against the expected prescribed medication name.
+Return raw structured JSON:
+{
+  "isMatch": boolean,
+  "detectedPillName": "string",
+  "prescribedPillName": "string",
+  "safetyStatus": "SAFE_TO_TAKE" | "DANGEROUS_MISMATCH" | "UNCLEAR",
+  "confidenceScore": number (0 to 1),
+  "messageHindi": "Polite reassuring Hindi message for the grandfather/grandmother",
+  "warnings": ["string"]
+}`;
+
+      const prompt = `Expected Medication Name: ${expectedMedicationName}
+Pill/Strip Detection Context: ${pillImageTextOrUrl}
+
+Verify if this pill matches the prescribed medication. Return raw JSON only.`;
+
+      const execution = await aiService.generateStructuredJson<any>(
+        prompt,
+        { systemInstruction },
+        req.id
+      );
+
+      res.status(200).json(
+        ApiResponse.success(
+          `Pill verification completed via [${execution.provider}]`,
+          execution.result
+        )
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 4. General AI Structured Analysis
 router.post(
   '/analyze',
+  authenticateJwt,
   authRateLimiter,
   validateRequest(aiAnalyzeSchema),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -123,32 +184,7 @@ router.post(
         req.id
       );
 
-      res.status(200).json(
-        ApiResponse.success('AI structured analysis completed', execution)
-      );
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
-// General AI text generation endpoint
-router.post(
-  '/generate',
-  authRateLimiter,
-  validateRequest(aiAnalyzeSchema),
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const { prompt, systemInstruction } = req.body;
-      const execution = await aiService.generateText(
-        prompt,
-        { systemInstruction },
-        req.id
-      );
-
-      res.status(200).json(
-        ApiResponse.success('AI text generation completed', execution)
-      );
+      res.status(200).json(ApiResponse.success('AI structured analysis completed', execution));
     } catch (error) {
       next(error);
     }

@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { PrismaClient, Role, MealRelation, Criticality, MedicationLogStatus, ConfirmationMethod, AppointmentStatus, AlertType, AlertStatus, AccessRole } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
@@ -227,13 +228,11 @@ export async function seed() {
   console.log('🎉 AayuCare Database Seeding Complete!');
 }
 
-if (require.main === module) {
-  seed()
-    .catch((e) => {
-      console.error('❌ Seeding failed:', e);
-      process.exit(1);
-    })
-    .finally(async () => {
-      await prisma.$disconnect();
-    });
-}
+seed()
+  .catch((e: unknown) => {
+    console.error('❌ Seeding failed:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

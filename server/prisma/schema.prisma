@@ -93,8 +93,6 @@ model ElderProfile {
   medications       Medication[]
   appointments      Appointment[]
   alerts            AlertNotification[]
-
-  @@index([carePasscode])
 }
 
 model CareCircleAccess {

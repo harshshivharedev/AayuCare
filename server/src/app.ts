@@ -1,4 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
+import fs from 'fs';
+import path from 'path';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -24,7 +26,12 @@ const app: Application = express();
 app.use(requestIdMiddleware);
 
 // 2. Security Headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false
+  })
+);
 
 // 3. CORS
 const allowedOrigins = [
@@ -70,16 +77,6 @@ app.use(cookieParser());
 app.use('/api', apiRateLimiter);
 
 // 6. Application Routes
-app.get('/', (req: Request, res: Response) => {
-  res.status(200).json({
-    name: 'AayuCare (आयु-Care) API',
-    status: 'ONLINE',
-    version: '1.0.0',
-    documentation: 'Catalyst x PromptWars 2026 Solo Hackathon',
-    healthCheck: '/api/health'
-  });
-});
-
 app.use('/uploads', express.static('uploads'));
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
@@ -90,7 +87,33 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/ai', aiRoutes);
 
-// 7. 404 Route Handler
+// 7. Serve Static Frontend Web App (Dada Ji & Caretaker Views)
+const publicDir = path.resolve(__dirname, '../public');
+if (fs.existsSync(publicDir)) {
+  app.use(express.static(publicDir));
+  app.get('*', (req: Request, res: Response, next: NextFunction) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    const indexHtml = path.join(publicDir, 'index.html');
+    if (fs.existsSync(indexHtml)) {
+      return res.sendFile(indexHtml);
+    }
+    next();
+  });
+} else {
+  app.get('/', (req: Request, res: Response) => {
+    res.status(200).json({
+      name: 'AayuCare (आयु-Care) API',
+      status: 'ONLINE',
+      version: '1.0.0',
+      documentation: 'Catalyst x PromptWars 2026 Solo Hackathon',
+      healthCheck: '/api/health'
+    });
+  });
+}
+
+// 8. 404 Route Handler
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(ApiError.notFound(`Route [${req.method} ${req.originalUrl}] does not exist on this server.`));
 });

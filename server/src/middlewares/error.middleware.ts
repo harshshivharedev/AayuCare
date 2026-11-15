@@ -85,7 +85,7 @@ export const errorHandler = (
   } else if (err.name === 'TokenExpiredError') {
     statusCode = 401;
     message = 'Authorization token has expired.';
-  } else if (err.message && ENV.NODE_ENV === 'development') {
+  } else if (err.message) {
     message = err.message;
   }
 

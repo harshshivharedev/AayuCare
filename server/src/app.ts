@@ -22,6 +22,9 @@ import aiRoutes from './modules/ai/ai.routes';
 
 const app: Application = express();
 
+// Trust reverse proxy (Render, Cloudflare, Heroku) for accurate IP and rate limiting
+app.set('trust proxy', 1);
+
 // 1. Request ID Tracing
 app.use(requestIdMiddleware);
 

@@ -23,7 +23,7 @@ router.get(
 router.patch(
   '/:id/acknowledge',
   authenticateJwt,
-  requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
+  requireRole('CAREGIVER', 'FAMILY', 'ADMIN', 'ELDERLY'),
   controller.acknowledge
 );
 

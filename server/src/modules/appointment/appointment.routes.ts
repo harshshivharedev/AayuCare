@@ -15,7 +15,7 @@ const controller = new AppointmentController(service);
 router.post(
   '/',
   authenticateJwt,
-  requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
+  requireRole('CAREGIVER', 'FAMILY', 'ADMIN', 'ELDERLY'),
   requireElderAccess(),
   validateRequest(createAppointmentSchema),
   controller.create
@@ -49,7 +49,7 @@ router.get(
 router.patch(
   '/:id',
   authenticateJwt,
-  requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
+  requireRole('CAREGIVER', 'FAMILY', 'ADMIN', 'ELDERLY'),
   validateRequest(updateAppointmentSchema),
   controller.update
 );
@@ -58,7 +58,7 @@ router.patch(
 router.delete(
   '/:id',
   authenticateJwt,
-  requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
+  requireRole('CAREGIVER', 'FAMILY', 'ADMIN', 'ELDERLY'),
   controller.delete
 );
 

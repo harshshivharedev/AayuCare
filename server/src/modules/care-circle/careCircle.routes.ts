@@ -15,7 +15,6 @@ const controller = new CareCircleController(service);
 router.post(
   '/pair',
   authenticateJwt,
-  requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
   validateRequest(pairCareCircleSchema),
   controller.pair
 );
@@ -24,7 +23,6 @@ router.post(
 router.get(
   '/elders',
   authenticateJwt,
-  requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
   controller.getLinkedElders
 );
 
@@ -40,7 +38,6 @@ router.get(
 router.patch(
   '/elder/:elderId',
   authenticateJwt,
-  requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
   requireElderAccess(),
   validateRequest(updateElderProfileSchema),
   controller.updateProfile

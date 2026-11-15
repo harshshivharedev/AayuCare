@@ -126,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPair }) => {
             )}
 
             {/* Caregiver Pair button if no elder linked or want to link another */}
-            {user && (user.role === 'CAREGIVER' || user.role === 'FAMILY' || user.role === 'ADMIN') && (
+            {user && (
               <button
                 onClick={onOpenPair}
                 className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-teal-600 text-teal-700 hover:bg-teal-50 transition"

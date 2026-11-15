@@ -72,9 +72,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   }, []);
 
-  // Fetch linked elders whenever user is a caregiver
+  // Fetch linked elders whenever user is logged in
   useEffect(() => {
-    if (user && (user.role === 'CAREGIVER' || user.role === 'FAMILY' || user.role === 'ADMIN')) {
+    if (user) {
       refreshLinkedElders();
     }
   }, [user]);
@@ -176,6 +176,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     if (res.data) {
       handleSetActiveElder(res.data.elder);
+      if (user && user.role === 'ELDERLY') {
+        const updatedUser = { ...user, role: 'CAREGIVER' as UserRole };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
       await refreshLinkedElders();
       return res.data;
     }

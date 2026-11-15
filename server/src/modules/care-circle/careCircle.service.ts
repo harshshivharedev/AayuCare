@@ -32,6 +32,16 @@ export class CareCircleService {
       AccessRole.PRIMARY_ADMIN
     );
 
+    try {
+      const { prisma } = await import('../../config/db');
+      await prisma.user.updateMany({
+        where: { id: caregiverUserId, role: 'ELDERLY' },
+        data: { role: 'CAREGIVER' }
+      });
+    } catch {
+      // In-memory or fallback unit testing
+    }
+
     return { elder, access };
   }
 

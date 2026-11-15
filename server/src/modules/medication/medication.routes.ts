@@ -20,7 +20,7 @@ const controller = new MedicationController(service);
 router.post(
   '/',
   authenticateJwt,
-  requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
+  requireRole('CAREGIVER', 'FAMILY', 'ADMIN', 'ELDERLY'),
   requireElderAccess(),
   validateRequest(createMedicationSchema),
   controller.create
@@ -62,7 +62,7 @@ router.get(
 router.patch(
   '/:id',
   authenticateJwt,
-  requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
+  requireRole('CAREGIVER', 'FAMILY', 'ADMIN', 'ELDERLY'),
   validateRequest(updateMedicationSchema),
   controller.update
 );
@@ -71,7 +71,7 @@ router.patch(
 router.delete(
   '/:id',
   authenticateJwt,
-  requireRole('CAREGIVER', 'FAMILY', 'ADMIN'),
+  requireRole('CAREGIVER', 'FAMILY', 'ADMIN', 'ELDERLY'),
   controller.delete
 );
 

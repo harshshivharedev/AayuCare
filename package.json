@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "Full-stack scalable enterprise application architected with SOLID principles, LLD design, Prisma ORM, and Google Gemini AI.",
   "scripts": {
-    "dev:server": "cd server && npm run dev",
-    "dev:client": "cd client && npm run dev",
+    "build": "cd client && npm install && npm run build",
+    "build:client": "cd client && npm run build",
     "build:server": "cd server && npm run build",
-    "build:client": "cd client && npm run build"
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev"
   },
   "keywords": [
     "catalyst-hackathon",

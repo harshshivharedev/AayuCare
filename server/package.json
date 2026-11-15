@@ -4,7 +4,7 @@
   "description": "Production-ready scalable backend built for Catalyst Hackathon with SOLID principles and LLD architecture",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "prisma generate && tsc",
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
     "test": "tsx --test src/**/*.test.ts",

@@ -38,14 +38,18 @@ if (ENV.NODE_ENV === 'development') {
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, server-to-server, Render health checks)
       if (!origin) {
-        if (ENV.NODE_ENV === 'development') {
-          return callback(null, true);
-        }
-        return callback(ApiError.forbidden('CORS: Missing Origin header'));
+        return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin)) {
+      if (
+        ENV.CLIENT_URL === '*' ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        origin.includes('localhost') ||
+        origin.includes('127.0.0.1')
+      ) {
         return callback(null, true);
       }
 

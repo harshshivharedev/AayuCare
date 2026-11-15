@@ -12,6 +12,7 @@ import { ApiError } from './utils/apiError';
 import healthRoutes from './modules/health/health.routes';
 import authRoutes from './modules/auth/auth.routes';
 import careCircleRoutes from './modules/care-circle/careCircle.routes';
+import medicationRoutes from './modules/medication/medication.routes';
 
 const app: Application = express();
 
@@ -64,6 +65,7 @@ app.use('/api', apiRateLimiter);
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/care-circle', careCircleRoutes);
+app.use('/api/medications', medicationRoutes);
 
 // 7. 404 Route Handler
 app.use((req: Request, res: Response, next: NextFunction) => {

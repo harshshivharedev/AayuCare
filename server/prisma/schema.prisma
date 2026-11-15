@@ -121,6 +121,8 @@ model Medication {
   mealRelation      MealRelation @default(AFTER_MEAL)
   criticality       Criticality  @default(ROUTINE)
   pillImageUrl      String?
+  voiceNoteUrl      String? // Caretaker recorded voice guidance for this tablet
+  voiceNoteText     String? // Transcribed / custom text of caretaker's voice guidance
   dietaryGuidelines String[]
   instructions      String?
   isActive          Boolean      @default(true)

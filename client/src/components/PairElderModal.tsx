@@ -45,7 +45,7 @@ export const PairElderModal: React.FC<PairElderModalProps> = ({ isOpen, onClose 
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900">Pair with Elder</h3>
-              <p className="text-[11px] text-slate-500">Enter Elder's CarePasscode (e.g. CARE-8421)</p>
+              <p className="text-[11px] text-slate-500">Enter Elder's CarePasscode (e.g. CARE-XXXX)</p>
             </div>
           </div>
           <button

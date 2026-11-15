@@ -68,34 +68,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  // Instant 1-Click Demo Logins for Hackathon Evaluators
-  const handleQuickDemo = async (demoRole: 'ELDER' | 'CAREGIVER') => {
-    setLoading(true);
-    setError(null);
-    try {
-      if (demoRole === 'ELDER') {
-        // Register or login as seeded elder
-        try {
-          await login('dadaji.demo@aayucare.in', 'Password@123');
-        } catch {
-          await register('Ram Chandra Sharma', 'dadaji.demo@aayucare.in', 'Password@123', 'ELDERLY');
-        }
-      } else {
-        // Register or login as seeded caregiver (paired with Ram Chandra Sharma)
-        try {
-          await login('rohit.caregiver@aayucare.in', 'Password@123');
-        } catch {
-          await register('Rohit Sharma (Son)', 'rohit.caregiver@aayucare.in', 'Password@123', 'CAREGIVER');
-        }
-      }
-      onClose();
-    } catch (err: any) {
-      setError(err.message || 'Demo login failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setError(null);
@@ -318,27 +290,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             <span>Continue with Google</span>
           </button>
         </form>
-
-        {/* 1-Click Demo Evaluation Bar */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100">
-          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center mb-2.5">
-            ⚡ Instant Evaluator Demo Logins
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => handleQuickDemo('ELDER')}
-              className="py-1.5 px-2 bg-white hover:bg-teal-50 border border-slate-200 text-slate-700 rounded-lg text-xs font-medium transition text-center shadow-2xs"
-            >
-              👴 Login as <b>Dada Ji</b>
-            </button>
-            <button
-              onClick={() => handleQuickDemo('CAREGIVER')}
-              className="py-1.5 px-2 bg-white hover:bg-teal-50 border border-slate-200 text-slate-700 rounded-lg text-xs font-medium transition text-center shadow-2xs"
-            >
-              🧑‍⚕️ Login as <b>Caretaker</b>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

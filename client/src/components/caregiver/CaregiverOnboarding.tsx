@@ -43,11 +43,6 @@ export const CaregiverOnboarding: React.FC<CaregiverOnboardingProps> = ({ onOpen
     }
   };
 
-  const handleQuickDemoFill = () => {
-    setPasscode('CARE-8421');
-    setError(null);
-  };
-
   return (
     <div className="max-w-2xl mx-auto py-4 sm:py-8 px-2 sm:px-4 animate-in fade-in duration-200">
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-5 sm:p-8 space-y-6">
@@ -152,22 +147,8 @@ export const CaregiverOnboarding: React.FC<CaregiverOnboardingProps> = ({ onOpen
                 />
               </div>
               <p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
-                💡 <span className="font-semibold">Where to find it:</span> View the top header on Dada Ji’s screen or switch to{' '}
-                <span className="font-semibold text-teal-700">"👴 Dada Ji"</span> tab in the navigation bar to see their unique CarePasscode.
+                💡 <span className="font-semibold">Where to find it:</span> View the top header on your elder’s screen or ask them for their unique CarePasscode.
               </p>
-            </div>
-
-            {/* Quick Demo Fill Helper */}
-            <div className="pt-1 flex items-center justify-between text-xs text-slate-500">
-              <span>Evaluating or Testing?</span>
-              <button
-                type="button"
-                onClick={handleQuickDemoFill}
-                className="inline-flex items-center gap-1 font-semibold text-teal-700 hover:text-teal-800 underline underline-offset-2"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>Autofill Demo Code (CARE-8421)</span>
-              </button>
             </div>
 
             <button

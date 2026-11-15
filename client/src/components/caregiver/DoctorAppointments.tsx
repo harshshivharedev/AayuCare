@@ -32,20 +32,9 @@ export const DoctorAppointments: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fallbackAppt: Appointment = {
-    id: 'demo-appt-1',
-    elderProfileId: activeElder?.id || 'demo-elder',
-    doctorName: 'Dr. Arvind Sharma, MD',
-    specialty: 'Senior Cardiologist',
-    clinicAddress: 'Max Super Speciality Hospital, Saket, New Delhi',
-    appointmentDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-    status: 'UPCOMING',
-    prepNotes: '10 hours overnight fasting required for Lipid Profile & HbA1c test.'
-  };
-
   const fetchAppointments = useCallback(async () => {
     if (!activeElder?.id) {
-      setAppointments([fallbackAppt]);
+      setAppointments([]);
       setLoading(false);
       return;
     }
@@ -76,12 +65,17 @@ export const DoctorAppointments: React.FC = () => {
       return;
     }
 
+    if (!activeElder?.id) {
+      setError('Please select or link an elder before scheduling an appointment.');
+      return;
+    }
+
     setSaving(true);
     setError(null);
 
     try {
       const res = await ApiClient.post<Appointment>('/appointments', {
-        elderProfileId: activeElder?.id || 'demo-elder-id',
+        elderProfileId: activeElder.id,
         doctorName: doctorName.trim(),
         specialty: specialty.trim() || 'General Medicine',
         clinicAddress: clinicAddress.trim() || 'City Clinic',
@@ -92,23 +86,13 @@ export const DoctorAppointments: React.FC = () => {
       if (res.success) {
         setIsScheduleOpen(false);
         setDoctorName('');
+        setSpecialty('');
+        setClinicAddress('');
+        setAppointmentDate('');
         await fetchAppointments();
       }
     } catch (err: any) {
-      console.warn('Fallback local appointment append:', err);
-      const newAppt: Appointment = {
-        id: `local-${Date.now()}`,
-        elderProfileId: activeElder?.id || 'demo-elder',
-        doctorName,
-        specialty,
-        clinicAddress,
-        appointmentDate: new Date(appointmentDate).toISOString(),
-        status: 'UPCOMING',
-        prepNotes
-      };
-      setAppointments([newAppt, ...appointments]);
-      setIsScheduleOpen(false);
-      setDoctorName('');
+      setError(err?.message || 'Failed to schedule appointment. Please try again.');
     } finally {
       setSaving(false);
     }

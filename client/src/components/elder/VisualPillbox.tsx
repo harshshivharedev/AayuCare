@@ -38,76 +38,22 @@ export const VisualPillbox: React.FC = () => {
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [playingAudioId, setPlayingAudioId] = useState<string | null>(null);
 
-  // Elder ID to query: either elderProfile.id or fallback demo
+  // Elder ID to query: elderProfile.id
   const targetElderId = elderProfile?.id;
 
-  const DEFAULT_DEMO_PILLBOX: TodayPillboxResponse = {
-    elderProfileId: 'demo-elder-id',
+  const EMPTY_PILLBOX: TodayPillboxResponse = {
+    elderProfileId: targetElderId || '',
     date: new Date().toISOString(),
     summary: {
-      totalDoses: 3,
-      takenDoses: 1,
-      pendingDoses: 2
+      totalDoses: 0,
+      takenDoses: 0,
+      pendingDoses: 0
     },
     slots: {
-      morning: [
-        {
-          id: 'demo-med-1',
-          name: 'Telmisartan 40mg (Micardis)',
-          dosage: '1 Tablet',
-          mealRelation: 'AFTER_MEAL',
-          criticality: 'HIGH_RISK',
-          pillImageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&q=80',
-          voiceNoteUrl: null,
-          voiceNoteText: 'दादा जी, नाश्ते के 15 मिनट बाद एक गोली गुनगुने पानी के साथ ले लीजिए। यह बीपी सामान्य रखेगी।',
-          dietaryGuidelines: ['खट्टे फल और मौसमी का जूस साथ में न लें'],
-          instructions: 'Take with warm water after breakfast',
-          scheduledTime: '08:30 AM',
-          timeSlot: 'MORNING',
-          status: 'TAKEN',
-          takenAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          isDueNow: false
-        }
-      ],
-      afternoon: [
-        {
-          id: 'demo-med-2',
-          name: 'Metformin 500mg (Glycomet-SR)',
-          dosage: '1 Tablet',
-          mealRelation: 'WITH_MEAL',
-          criticality: 'ROUTINE',
-          pillImageUrl: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&q=80',
-          voiceNoteUrl: null,
-          voiceNoteText: 'दोपहर के खाने के साथ ही यह गोली लें। खाली पेट बिल्कुल न लें।',
-          dietaryGuidelines: ['भोजन के बीच में ही लें'],
-          instructions: 'Take with lunch',
-          scheduledTime: '01:30 PM',
-          timeSlot: 'AFTERNOON',
-          status: 'SCHEDULED',
-          takenAt: null,
-          isDueNow: true
-        }
-      ],
+      morning: [],
+      afternoon: [],
       evening: [],
-      night: [
-        {
-          id: 'demo-med-3',
-          name: 'Atorvastatin 10mg (Atorva)',
-          dosage: '1 Tablet',
-          mealRelation: 'AFTER_MEAL',
-          criticality: 'ROUTINE',
-          pillImageUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&q=80',
-          voiceNoteUrl: null,
-          voiceNoteText: 'सोने से पहले पानी के साथ एक गोली लें। शुभ रात्रि दादा जी!',
-          dietaryGuidelines: ['हल्के गुनगुने पानी के साथ लें'],
-          instructions: 'Take before sleep',
-          scheduledTime: '09:30 PM',
-          timeSlot: 'NIGHT',
-          status: 'SCHEDULED',
-          takenAt: null,
-          isDueNow: false
-        }
-      ]
+      night: []
     }
   };
 
@@ -127,7 +73,7 @@ export const VisualPillbox: React.FC = () => {
 
   const fetchPillbox = useCallback(async () => {
     if (!targetElderId) {
-      setPillboxData(DEFAULT_DEMO_PILLBOX);
+      setPillboxData(EMPTY_PILLBOX);
       setLoading(false);
       return;
     }
@@ -138,11 +84,11 @@ export const VisualPillbox: React.FC = () => {
       if (res.success && res.data) {
         setPillboxData(res.data);
       } else {
-        setPillboxData(DEFAULT_DEMO_PILLBOX);
+        setPillboxData(EMPTY_PILLBOX);
       }
     } catch (err) {
-      console.warn('Using seeded pillbox fallback:', err);
-      setPillboxData(DEFAULT_DEMO_PILLBOX);
+      console.warn('Pillbox fetch error:', err);
+      setPillboxData(EMPTY_PILLBOX);
     } finally {
       setLoading(false);
     }
@@ -161,35 +107,6 @@ export const VisualPillbox: React.FC = () => {
     setConfirmingId(item.id);
 
     try {
-      if (!targetElderId || item.id.startsWith('demo-')) {
-        sound.playSuccessChime();
-        const msg = language === 'hi'
-          ? `शाबाश! आपने ${item.name} ले ली है। समय पर दवा लेना सेहत के लिए बहुत अच्छा है।`
-          : `Great! You have taken ${item.name}. Marked on-time.`;
-        setSuccessNotice(msg);
-
-        setPillboxData((prev) => {
-          if (!prev) return prev;
-          const slotKey = item.timeSlot.toLowerCase() as keyof typeof prev.slots;
-          return {
-            ...prev,
-            summary: {
-              ...prev.summary,
-              takenDoses: prev.summary.takenDoses + 1,
-              pendingDoses: Math.max(0, prev.summary.pendingDoses - 1)
-            },
-            slots: {
-              ...prev.slots,
-              [slotKey]: prev.slots[slotKey].map((it) =>
-                it.id === item.id ? { ...it, status: 'TAKEN', takenAt: new Date().toISOString() } : it
-              )
-            }
-          };
-        });
-        setConfirmingId(null);
-        return;
-      }
-
       const res = await ApiClient.post<any>('/medications/confirm-dose', {
         medicationId: item.id,
         method: 'BUTTON_TAP',
@@ -197,16 +114,11 @@ export const VisualPillbox: React.FC = () => {
       });
 
       if (res.success) {
-        // 1. Play harmonic success chime (C5-E5-G5)
         sound.playSuccessChime();
-
-        // 2. Set success notice
         const msg = language === 'hi'
           ? `शाबाश! आपने ${item.name} ले ली है। समय पर दवा लेना सेहत के लिए बहुत अच्छा है।`
           : `Great! You have taken ${item.name}. Marked on-time.`;
         setSuccessNotice(msg);
-
-        // 3. Refresh today's pillbox
         await fetchPillbox();
       }
     } catch (err: any) {

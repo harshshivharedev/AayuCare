@@ -6,6 +6,7 @@ import {
   Printer,
   CheckCircle2,
   AlertTriangle,
+  AlertCircle,
   Stethoscope,
   Pill,
   Calendar,
@@ -82,76 +83,12 @@ export const ClinicalBriefcaseModal: React.FC<ClinicalBriefcaseModalProps> = ({
         if (res.success && res.data) {
           setData(res.data);
         } else {
-          throw new Error('Failed to load briefcase');
+          throw new Error('Failed to load clinical briefcase data');
         }
-      } catch (err) {
-        console.warn('Using seeded clinical briefcase fallback:', err);
-        // Realistic fallback for evaluators
-        setData({
-          elder: {
-            id: elderProfileId,
-            fullName: 'Ram Chandra Sharma',
-            age: 74,
-            bloodGroup: 'B+',
-            emergencyContact: '+919876543210',
-            notes: 'Hypertension & Type-2 Diabetes management. Mild morning forgetfulness.'
-          },
-          generatedAt: new Date().toISOString(),
-          reportingWindowDays: 30,
-          adherence: {
-            ratePercent: 94,
-            totalScheduledDoses: 60,
-            takenDoses: 56,
-            missedDoses: 4,
-            onTimeRatePercent: 92
-          },
-          activeRegimens: [
-            {
-              name: 'Telmisartan 40mg (Micardis)',
-              dosage: '1 Tablet',
-              frequency: 'DAILY',
-              scheduleTimes: ['08:30'],
-              mealRelation: 'AFTER_MEAL',
-              criticality: 'HIGH_RISK',
-              dietaryGuidelines: ['खट्टे फल और मौसमी का जूस साथ में न लें']
-            },
-            {
-              name: 'Metformin 500mg (Glycomet-SR)',
-              dosage: '1 Tablet',
-              frequency: 'DAILY',
-              scheduleTimes: ['13:30', '20:30'],
-              mealRelation: 'WITH_MEAL',
-              criticality: 'ROUTINE',
-              dietaryGuidelines: ['भोजन के बीच में ही लें']
-            },
-            {
-              name: 'Atorvastatin 10mg (Atorva)',
-              dosage: '1 Tablet',
-              frequency: 'DAILY',
-              scheduleTimes: ['21:30'],
-              mealRelation: 'AFTER_MEAL',
-              criticality: 'ROUTINE',
-              dietaryGuidelines: ['हल्के गुनगुने पानी के साथ लें']
-            }
-          ],
-          recentLogs: [
-            { medicationName: 'Telmisartan 40mg', scheduledFor: 'Today 08:30 AM', takenAt: 'Today 08:35 AM', status: 'TAKEN' },
-            { medicationName: 'Metformin 500mg', scheduledFor: 'Yesterday 08:30 PM', takenAt: 'Yesterday 08:32 PM', status: 'TAKEN' },
-            { medicationName: 'Metformin 500mg', scheduledFor: 'Yesterday 01:30 PM', takenAt: 'Yesterday 02:15 PM', status: 'TAKEN' }
-          ],
-          clinicalSummary: {
-            executiveSummary:
-              'Patient demonstrates excellent 94% overall medication adherence over the past 30 days. Blood pressure medication (Telmisartan) has been taken consistently on morning schedule. Metformin had 2 minor schedule deviations (>30 mins late) during lunch hours but zero consecutive missed doses. No adverse drug-food interactions reported.',
-            identifiedRisks: [
-              'Lunchtime doses occasionally delayed due to variable lunch timing.',
-              'Ensure morning BP check remains within 120-130 / 80-85 mmHg range.'
-            ],
-            questionsForDoctor: [
-              'Should Telmisartan dosage continue at 40mg or be adjusted based on latest ambulatory BP?',
-              'Review HbA1c fasting report to consider adjusting Glycomet-SR 500mg timing.'
-            ]
-          }
-        });
+      } catch (err: any) {
+        console.warn('Clinical briefcase fetch error:', err);
+        setError(err?.message || 'Failed to generate Clinical Briefcase for this elder.');
+        setData(null);
       } finally {
         setLoading(false);
       }
@@ -213,6 +150,12 @@ export const ClinicalBriefcaseModal: React.FC<ClinicalBriefcaseModalProps> = ({
             <p className="text-xs font-semibold text-slate-600">
               Generating clinical adherence dossier & AI doctor notes...
             </p>
+          </div>
+        ) : error ? (
+          <div className="p-12 text-center space-y-3">
+            <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
+            <p className="text-sm font-bold text-slate-800">{error}</p>
+            <p className="text-xs text-slate-500">Ensure this elder has scheduled regimens and dose records.</p>
           </div>
         ) : data ? (() => {
             const adherence = data.adherence || {

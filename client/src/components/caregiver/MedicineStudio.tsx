@@ -34,61 +34,9 @@ export const MedicineStudio: React.FC = () => {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
-  // Fallback demo meds if no active elder or offline
-  const DEMO_MEDICATIONS: Medication[] = [
-    {
-      id: 'demo-med-1',
-      elderProfileId: activeElder?.id || 'demo-elder',
-      name: 'Telmisartan 40mg (Micardis)',
-      dosage: '1 Tablet',
-      frequency: 'DAILY',
-      scheduleTimes: ['08:30'],
-      mealRelation: 'AFTER_MEAL',
-      criticality: 'HIGH_RISK',
-      pillImageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&q=80',
-      voiceNoteUrl: null,
-      voiceNoteText: 'दादा जी, नाश्ते के 15 मिनट बाद एक गोली गुनगुने पानी के साथ ले लीजिए। यह बीपी सामान्य रखेगी।',
-      dietaryGuidelines: ['खट्टे फल और मौसमी का जूस साथ में न लें', 'Avoid grapefruit'],
-      instructions: 'Take with warm water after breakfast',
-      isActive: true
-    },
-    {
-      id: 'demo-med-2',
-      elderProfileId: activeElder?.id || 'demo-elder',
-      name: 'Metformin 500mg (Glycomet-SR)',
-      dosage: '1 Tablet',
-      frequency: 'DAILY',
-      scheduleTimes: ['13:30', '20:30'],
-      mealRelation: 'WITH_MEAL',
-      criticality: 'ROUTINE',
-      pillImageUrl: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&q=80',
-      voiceNoteUrl: null,
-      voiceNoteText: 'दोपहर और रात के खाने के बीच में यह गोली लें। खाली पेट बिल्कुल न लें।',
-      dietaryGuidelines: ['भोजन के बीच में ही लें'],
-      instructions: 'Take strictly with meals',
-      isActive: true
-    },
-    {
-      id: 'demo-med-3',
-      elderProfileId: activeElder?.id || 'demo-elder',
-      name: 'Atorvastatin 10mg (Atorva)',
-      dosage: '1 Tablet',
-      frequency: 'DAILY',
-      scheduleTimes: ['21:30'],
-      mealRelation: 'AFTER_MEAL',
-      criticality: 'ROUTINE',
-      pillImageUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&q=80',
-      voiceNoteUrl: null,
-      voiceNoteText: 'सोने से पहले पानी के साथ एक गोली लें। शुभ रात्रि दादा जी!',
-      dietaryGuidelines: ['हल्के गुनगुने पानी के साथ लें'],
-      instructions: 'Take before sleeping',
-      isActive: true
-    }
-  ];
-
   const fetchMedications = useCallback(async () => {
     if (!activeElder?.id) {
-      setMedications(DEMO_MEDICATIONS);
+      setMedications([]);
       setLoading(false);
       return;
     }

@@ -34,34 +34,10 @@ export const AlertsFeed: React.FC = () => {
 
   const elderDisplayName = activeElder?.fullName || elderProfile?.fullName || 'Elderly Loved One';
 
-  const DEMO_ALERTS: AlertNotificationItem[] = [
-    {
-      id: 'demo-alert-1',
-      elderProfileId: activeElder?.id || elderProfile?.id || 'demo-elder',
-      recipientEmail: user?.email || 'caregiver@aayucare.in',
-      alertType: 'MISSED_DOSE',
-      title: 'CRITICAL: Missed Dose Escalation (>45 Mins Overdue)',
-      message: `${elderDisplayName} has not confirmed their scheduled dose of Telmisartan 40mg within 45 minutes of scheduled time (08:30 AM). High risk for BP spike. Immediate caregiver check-in recommended.`,
-      status: 'SENT',
-      createdAt: new Date(Date.now() - 48 * 60 * 1000).toISOString()
-    },
-    {
-      id: 'demo-alert-2',
-      elderProfileId: activeElder?.id || elderProfile?.id || 'demo-elder',
-      recipientEmail: user?.email || 'caregiver@aayucare.in',
-      alertType: 'APPOINTMENT',
-      title: 'Upcoming Appointment Reminder',
-      message:
-        'Consultation with Dr. Arvind Sharma, MD (Senior Cardiologist) is scheduled in 3 days. Fasting required for 10 hours overnight.',
-      status: 'ACKNOWLEDGED',
-      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    }
-  ];
-
   const fetchAlerts = useCallback(async () => {
     if (!activeElder?.id) {
-      setAlerts(DEMO_ALERTS);
-      setUnreadCount(1);
+      setAlerts([]);
+      setUnreadCount(0);
       setLoading(false);
       return;
     }

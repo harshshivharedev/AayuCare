@@ -31,6 +31,73 @@ export const App: React.FC = () => {
   const [isPairOpen, setIsPairOpen] = useState(false);
   const [caregiverTab, setCaregiverTab] = useState<'MEDICATIONS' | 'APPOINTMENTS' | 'ALERTS'>('MEDICATIONS');
   const [careCircleMembers, setCareCircleMembers] = useState<any[]>([]);
+  const [metrics, setMetrics] = useState<{
+    adherencePercent: number | null;
+    takenDoses: number;
+    totalDoses: number;
+    medicationsCount: number;
+    nextDoctorName: string | null;
+    nextDoctorClinic: string | null;
+    activeAlertsCount: number;
+  }>({
+    adherencePercent: null,
+    takenDoses: 0,
+    totalDoses: 0,
+    medicationsCount: 0,
+    nextDoctorName: null,
+    nextDoctorClinic: null,
+    activeAlertsCount: 0
+  });
+
+  useEffect(() => {
+    if (activeElder?.id) {
+      ApiClient.get<any>(`/medications/adherence/${activeElder.id}`)
+        .then((res) => {
+          if (res.data) {
+            setMetrics((prev) => ({
+              ...prev,
+              adherencePercent: res.data.ratePercent ?? res.data.adherenceRate ?? null,
+              takenDoses: res.data.takenDoses ?? res.data.taken ?? 0,
+              totalDoses: res.data.totalScheduledDoses ?? res.data.totalScheduled ?? 0
+            }));
+          }
+        })
+        .catch(() => {});
+
+      ApiClient.get<any[]>(`/medications/elder/${activeElder.id}`)
+        .then((res) => {
+          if (res?.data) {
+            setMetrics((prev) => ({ ...prev, medicationsCount: res.data ? res.data.length : 0 }));
+          }
+        })
+        .catch(() => {});
+
+      ApiClient.get<any>(`/appointments/upcoming/${activeElder.id}`)
+        .then((res) => {
+          if (res.data) {
+            setMetrics((prev) => ({
+              ...prev,
+              nextDoctorName: res.data.doctorName || null,
+              nextDoctorClinic: res.data.clinicAddress || res.data.specialty || null
+            }));
+          } else {
+            setMetrics((prev) => ({ ...prev, nextDoctorName: null, nextDoctorClinic: null }));
+          }
+        })
+        .catch(() => {});
+
+      ApiClient.get<any>(`/alerts/elder/${activeElder.id}`)
+        .then((res) => {
+          if (res.data) {
+            setMetrics((prev) => ({
+              ...prev,
+              activeAlertsCount: res.data.unreadCount ?? res.data.alerts?.length ?? 0
+            }));
+          }
+        })
+        .catch(() => {});
+    }
+  }, [activeElder?.id]);
 
   useEffect(() => {
     if (elderProfile?.id && user) {
@@ -158,12 +225,12 @@ export const App: React.FC = () => {
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 </div>
                 <div className="text-xl sm:text-2xl font-extrabold text-slate-900">
-                  {activeElder?.carePasscode === 'CARE-8421' ? '94%' : '100%'}
+                  {metrics.adherencePercent !== null ? `${metrics.adherencePercent}%` : 'N/A'}
                 </div>
-                <div className="text-[10px] sm:text-[11px] text-emerald-600 font-medium mt-0.5">
-                  {activeElder?.carePasscode === 'CARE-8421'
-                    ? '56 of 60 doses taken on-time'
-                    : 'All scheduled doses on-time'}
+                <div className="text-[10px] sm:text-[11px] text-emerald-600 font-medium mt-0.5 truncate">
+                  {metrics.totalDoses > 0
+                    ? `${metrics.takenDoses} of ${metrics.totalDoses} doses recorded`
+                    : 'No doses scheduled yet today'}
                 </div>
               </div>
 
@@ -173,12 +240,12 @@ export const App: React.FC = () => {
                   <Pill className="w-4 h-4 text-teal-600" />
                 </div>
                 <div className="text-xl sm:text-2xl font-extrabold text-slate-900">
-                  {activeElder?.carePasscode === 'CARE-8421' ? '2 Regimens' : 'Active Care'}
+                  {metrics.medicationsCount} {metrics.medicationsCount === 1 ? 'Regimen' : 'Regimens'}
                 </div>
-                <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
-                  {activeElder?.carePasscode === 'CARE-8421'
-                    ? 'Telmisartan (BP) & Metformin (Sugar)'
-                    : 'Manage in Medication Studio below'}
+                <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+                  {metrics.medicationsCount > 0
+                    ? 'Managed in Medication Studio below'
+                    : 'Click Add Medicine below'}
                 </div>
               </div>
 
@@ -188,12 +255,10 @@ export const App: React.FC = () => {
                   <Calendar className="w-4 h-4 text-blue-600" />
                 </div>
                 <div className="text-xs sm:text-sm font-bold text-slate-900 mt-1 truncate">
-                  {activeElder?.carePasscode === 'CARE-8421' ? 'Dr. Arvind Sharma' : 'Routine Consultation'}
+                  {metrics.nextDoctorName || 'None Scheduled'}
                 </div>
                 <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate">
-                  {activeElder?.carePasscode === 'CARE-8421'
-                    ? 'Cardiology (Max Saket)'
-                    : 'Check Doctor Visits tab below'}
+                  {metrics.nextDoctorClinic || 'Manage in Doctor Visits tab'}
                 </div>
               </div>
 
@@ -202,9 +267,13 @@ export const App: React.FC = () => {
                   <span className="text-xs font-semibold">Safety Alerts</span>
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
                 </div>
-                <div className="text-xl sm:text-2xl font-extrabold text-slate-900">All Clear</div>
-                <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
-                  Zero critical escalations active
+                <div className="text-xl sm:text-2xl font-extrabold text-slate-900">
+                  {metrics.activeAlertsCount > 0 ? `${metrics.activeAlertsCount} Urgent` : 'All Clear'}
+                </div>
+                <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+                  {metrics.activeAlertsCount > 0
+                    ? 'Review active escalations below'
+                    : 'Zero critical escalations active'}
                 </div>
               </div>
             </div>

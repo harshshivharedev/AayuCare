@@ -69,7 +69,7 @@ export const PrescriptionScanner: React.FC<PrescriptionScannerProps> = ({
   elderProfileId
 }) => {
   const { language } = useLanguage();
-  const [rxText, setRxText] = useState<string>(SAMPLE_PRESCRIPTIONS[0].text);
+  const [rxText, setRxText] = useState<string>('');
   const [dietaryPref, setDietaryPref] = useState<string>('Vegetarian Indian Diet');
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<PrescriptionScanResult | null>(null);

@@ -157,9 +157,13 @@ export const App: React.FC = () => {
                   <span className="text-xs font-semibold">Today's Adherence</span>
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 </div>
-                <div className="text-xl sm:text-2xl font-extrabold text-slate-900">94%</div>
+                <div className="text-xl sm:text-2xl font-extrabold text-slate-900">
+                  {activeElder?.carePasscode === 'CARE-8421' ? '94%' : '100%'}
+                </div>
                 <div className="text-[10px] sm:text-[11px] text-emerald-600 font-medium mt-0.5">
-                  56 of 60 doses taken on-time
+                  {activeElder?.carePasscode === 'CARE-8421'
+                    ? '56 of 60 doses taken on-time'
+                    : 'All scheduled doses on-time'}
                 </div>
               </div>
 
@@ -168,9 +172,13 @@ export const App: React.FC = () => {
                   <span className="text-xs font-semibold">Active Medications</span>
                   <Pill className="w-4 h-4 text-teal-600" />
                 </div>
-                <div className="text-xl sm:text-2xl font-extrabold text-slate-900">2 Regimens</div>
+                <div className="text-xl sm:text-2xl font-extrabold text-slate-900">
+                  {activeElder?.carePasscode === 'CARE-8421' ? '2 Regimens' : 'Active Care'}
+                </div>
                 <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
-                  Telmisartan (BP) & Metformin (Sugar)
+                  {activeElder?.carePasscode === 'CARE-8421'
+                    ? 'Telmisartan (BP) & Metformin (Sugar)'
+                    : 'Manage in Medication Studio below'}
                 </div>
               </div>
 
@@ -179,8 +187,14 @@ export const App: React.FC = () => {
                   <span className="text-xs font-semibold">Next Doctor Visit</span>
                   <Calendar className="w-4 h-4 text-blue-600" />
                 </div>
-                <div className="text-xs sm:text-sm font-bold text-slate-900 mt-1 truncate">Dr. Arvind Sharma</div>
-                <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate">Cardiology (Max Saket)</div>
+                <div className="text-xs sm:text-sm font-bold text-slate-900 mt-1 truncate">
+                  {activeElder?.carePasscode === 'CARE-8421' ? 'Dr. Arvind Sharma' : 'Routine Consultation'}
+                </div>
+                <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate">
+                  {activeElder?.carePasscode === 'CARE-8421'
+                    ? 'Cardiology (Max Saket)'
+                    : 'Check Doctor Visits tab below'}
+                </div>
               </div>
 
               <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs">

@@ -53,13 +53,13 @@ export const DoctorAppointments: React.FC = () => {
     try {
       setLoading(true);
       const res = await ApiClient.get<Appointment[]>(`/appointments/elder/${activeElder.id}`);
-      if (res.success && res.data && res.data.length > 0) {
+      if (res.success && res.data) {
         setAppointments(res.data);
       } else {
-        setAppointments([fallbackAppt]);
+        setAppointments([]);
       }
     } catch {
-      setAppointments([fallbackAppt]);
+      setAppointments([]);
     } finally {
       setLoading(false);
     }
@@ -157,6 +157,14 @@ export const DoctorAppointments: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
             <div className="w-6 h-6 border-2 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
             <p className="text-xs text-slate-500">Loading appointments...</p>
+          </div>
+        ) : appointments.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center space-y-3">
+            <Calendar className="w-8 h-8 text-slate-300 mx-auto" />
+            <p className="text-xs font-bold text-slate-700">No doctor visits scheduled</p>
+            <p className="text-[11px] text-slate-400">
+              Click "Schedule Appointment" to record upcoming clinical visits and generate 30-day Briefcase reports.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

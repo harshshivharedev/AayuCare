@@ -96,14 +96,14 @@ export const MedicineStudio: React.FC = () => {
     try {
       setLoading(true);
       const res = await ApiClient.get<Medication[]>(`/medications/elder/${activeElder.id}`);
-      if (res.success && res.data && res.data.length > 0) {
+      if (res.success && res.data) {
         setMedications(res.data);
       } else {
-        setMedications(DEMO_MEDICATIONS);
+        setMedications([]);
       }
     } catch (err) {
-      console.warn('Using demo medications fallback:', err);
-      setMedications(DEMO_MEDICATIONS);
+      console.warn('Medications fetch error:', err);
+      setMedications([]);
     } finally {
       setLoading(false);
     }

@@ -71,16 +71,16 @@ export const AlertsFeed: React.FC = () => {
       const res = await ApiClient.get<{ alerts: AlertNotificationItem[]; unreadCount: number }>(
         `/alerts/elder/${activeElder.id}`
       );
-      if (res.success && res.data) {
+      if (res.success && res.data && res.data.alerts) {
         setAlerts(res.data.alerts);
-        setUnreadCount(res.data.unreadCount);
+        setUnreadCount(res.data.unreadCount || 0);
       } else {
-        setAlerts(DEMO_ALERTS);
-        setUnreadCount(1);
+        setAlerts([]);
+        setUnreadCount(0);
       }
     } catch {
-      setAlerts(DEMO_ALERTS);
-      setUnreadCount(1);
+      setAlerts([]);
+      setUnreadCount(0);
     } finally {
       setLoading(false);
     }

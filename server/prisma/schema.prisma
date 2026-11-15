@@ -60,6 +60,7 @@ enum AlertType {
 enum AlertStatus {
   PENDING
   SENT
+  ACKNOWLEDGED
   FAILED
 }
 

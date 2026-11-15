@@ -8,24 +8,18 @@ import { errorHandler } from './middlewares/error.middleware';
 import { requestIdMiddleware } from './middlewares/requestId.middleware';
 import { ApiError } from './utils/apiError';
 
-// Routes
-import authRoutes from './modules/auth/auth.routes';
+// Base Routes
 import healthRoutes from './modules/health/health.routes';
-import aiRoutes from './modules/ai/ai.routes';
-import careCircleRoutes from './modules/care-circle/careCircle.routes';
-import medicationRoutes from './modules/medication/medication.routes';
-import appointmentRoutes from './modules/appointment/appointment.routes';
-import alertRoutes from './modules/alerts/alert.routes';
 
 const app: Application = express();
 
-// 1. Request ID Tracing (must be first)
+// 1. Request ID Tracing
 app.use(requestIdMiddleware);
 
-// 2. Hardened Security Headers
+// 2. Security Headers
 app.use(helmet());
 
-// 3. Strict CORS Whitelist (Zero Wildcards)
+// 3. CORS
 const allowedOrigins = [
   ENV.CLIENT_URL.replace(/\/$/, '')
 ];
@@ -37,7 +31,6 @@ if (ENV.NODE_ENV === 'development') {
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin only in development (curl, postman)
       if (!origin) {
         if (ENV.NODE_ENV === 'development') {
           return callback(null, true);
@@ -57,7 +50,7 @@ app.use(
   })
 );
 
-// 4. Strict Body Parsers (1MB limit to protect against memory exhaustion)
+// 4. Body Parsers
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());
@@ -67,19 +60,13 @@ app.use('/api', apiRateLimiter);
 
 // 6. Application Routes
 app.use('/api/health', healthRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/care-circle', careCircleRoutes);
-app.use('/api/medications', medicationRoutes);
-app.use('/api/appointments', appointmentRoutes);
-app.use('/api/alerts', alertRoutes);
-app.use('/api/ai', aiRoutes);
 
 // 7. 404 Route Handler
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(ApiError.notFound(`Route [${req.method} ${req.originalUrl}] does not exist on this server.`));
 });
 
-// 8. Centralized Error Handling Middleware
+// 8. Centralized Error Handler
 app.use(errorHandler);
 
 export default app;

@@ -8,45 +8,173 @@ datasource db {
 }
 
 enum Role {
-  USER
+  ELDERLY
+  CAREGIVER
+  FAMILY
   ADMIN
+}
+
+enum AccessRole {
+  PRIMARY_ADMIN
+  OBSERVER
+}
+
+enum MealRelation {
+  BEFORE_MEAL
+  AFTER_MEAL
+  WITH_MEAL
+  ANYTIME
+}
+
+enum Criticality {
+  HIGH_RISK
+  ROUTINE
+}
+
+enum MedicationLogStatus {
+  SCHEDULED
+  TAKEN
+  MISSED
+  SKIPPED
+}
+
+enum ConfirmationMethod {
+  VOICE
+  BUTTON_TAP
+  CAREGIVER_OVERRIDE
+  SYSTEM_AUTO
+}
+
+enum AppointmentStatus {
+  UPCOMING
+  COMPLETED
+  CANCELLED
+}
+
+enum AlertType {
+  MISSED_DOSE
+  UPCOMING_DOSE
+  APPOINTMENT
+}
+
+enum AlertStatus {
+  PENDING
+  SENT
+  FAILED
 }
 
 model User {
   id        String   @id @default(uuid())
-  name      String
   email     String   @unique
   password  String
-  role      Role     @default(USER)
+  name      String
+  role      Role     @default(ELDERLY)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  projects  ProjectData[]
-  auditLogs AuditLog[]
+  elderProfile       ElderProfile?
+  careCircleAccesses CareCircleAccess[]
 }
 
-model ProjectData {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  status      String   @default("PENDING")
-  metadata    Json?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model ElderProfile {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName         String
+  age              Int
+  bloodGroup       String?
+  emergencyContact String
+  carePasscode     String   @unique // Hashed 6-character access key for caregiver pairing
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  @@index([userId, status])
+  careCircleMembers CareCircleAccess[]
+  medications       Medication[]
+  appointments      Appointment[]
+  alerts            AlertNotification[]
+
+  @@index([carePasscode])
 }
 
-model AuditLog {
-  id        String   @id @default(uuid())
-  action    String
-  details   String?
-  ipAddress String?
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  createdAt DateTime @default(now())
+model CareCircleAccess {
+  id             String       @id @default(uuid())
+  elderProfileId String
+  elderProfile   ElderProfile @relation(fields: [elderProfileId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessRole     AccessRole   @default(PRIMARY_ADMIN)
+  grantedAt      DateTime     @default(now())
 
-  @@index([userId, createdAt])
+  @@unique([elderProfileId, userId])
+  @@index([userId])
+}
+
+model Medication {
+  id                String       @id @default(uuid())
+  elderProfileId    String
+  elderProfile      ElderProfile @relation(fields: [elderProfileId], references: [id], onDelete: Cascade)
+  name              String // e.g. Telmisartan 40mg
+  dosage            String // e.g. 1 Tablet
+  frequency         String       @default("DAILY")
+  scheduleTimes     String[] // e.g. ["09:00", "20:00"]
+  mealRelation      MealRelation @default(AFTER_MEAL)
+  criticality       Criticality  @default(ROUTINE)
+  pillImageUrl      String? // Real photo of physical tablet/strip
+  dietaryGuidelines String[] // e.g. ["Avoid high potassium foods", "Take with plenty of water"]
+  instructions      String?
+  isActive          Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  logs MedicationLog[]
+
+  @@index([elderProfileId, isActive])
+}
+
+model MedicationLog {
+  id                 String              @id @default(uuid())
+  medicationId       String
+  medication         Medication          @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  scheduledFor       DateTime
+  takenAt            DateTime?
+  status             MedicationLogStatus @default(SCHEDULED)
+  confirmationMethod ConfirmationMethod?
+  notes              String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([medicationId, scheduledFor])
+  @@index([status])
+}
+
+model Appointment {
+  id              String            @id @default(uuid())
+  elderProfileId  String
+  elderProfile    ElderProfile      @relation(fields: [elderProfileId], references: [id], onDelete: Cascade)
+  doctorName      String
+  specialty       String // e.g. Cardiologist, Diabetologist
+  clinicAddress   String
+  appointmentDate DateTime
+  status          AppointmentStatus @default(UPCOMING)
+  prepNotes       String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([elderProfileId, appointmentDate])
+}
+
+model AlertNotification {
+  id             String       @id @default(uuid())
+  elderProfileId String
+  elderProfile   ElderProfile @relation(fields: [elderProfileId], references: [id], onDelete: Cascade)
+  recipientEmail String
+  alertType      AlertType
+  title          String
+  message        String
+  status         AlertStatus  @default(PENDING)
+  sentAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([elderProfileId, alertType])
 }

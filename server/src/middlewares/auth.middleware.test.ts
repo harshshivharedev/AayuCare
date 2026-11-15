@@ -20,7 +20,7 @@ describe('Auth Middleware Security Tests', () => {
 
   it('should authenticate and attach req.user for valid JWT with compliant Zod payload', () => {
     const validToken = jwt.sign(
-      { id: 'usr-12345', email: 'valid@example.com', role: 'USER' },
+      { id: 'usr-12345', email: 'valid@example.com', role: 'ELDERLY' },
       ENV.JWT_SECRET
     );
 
@@ -39,7 +39,7 @@ describe('Auth Middleware Security Tests', () => {
     assert.deepEqual(req.user, {
       id: 'usr-12345',
       email: 'valid@example.com',
-      role: 'USER'
+      role: 'ELDERLY'
     });
   });
 
@@ -68,7 +68,7 @@ describe('Auth Middleware Security Tests', () => {
 
   it('should enforce Role-Based Access Control (RBAC)', () => {
     const adminReq: any = { user: { id: '1', email: 'admin@ex.com', role: 'ADMIN' } };
-    const userReq: any = { user: { id: '2', email: 'user@ex.com', role: 'USER' } };
+    const elderReq: any = { user: { id: '2', email: 'elder@ex.com', role: 'ELDERLY' } };
     const res: any = {};
 
     let adminErr: any = undefined;
@@ -77,11 +77,11 @@ describe('Auth Middleware Security Tests', () => {
     });
     assert.equal(adminErr, undefined, 'Admin should be permitted');
 
-    let userErr: any = undefined;
-    requireRole('ADMIN')(userReq, res, (err) => {
-      userErr = err;
+    let elderErr: any = undefined;
+    requireRole('ADMIN')(elderReq, res, (err) => {
+      elderErr = err;
     });
-    assert.ok(userErr, 'Regular user should be forbidden from admin endpoint');
-    assert.equal(userErr.statusCode, 403);
+    assert.ok(elderErr, 'Elderly user should be forbidden from admin endpoint');
+    assert.equal(elderErr.statusCode, 403);
   });
 });

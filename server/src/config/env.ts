@@ -10,14 +10,19 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   JWT_SECRET: z.string().min(10, 'JWT_SECRET must be at least 10 characters'),
   JWT_EXPIRES_IN: z.string().default('7d'),
+  
+  // AI Engines (Adaption AI Primary + Gemini Fallback)
+  ADAPTION_AI_API_KEY: z.string().optional().default(''),
+  ADAPTION_AI_BASE_URL: z.string().optional().default('https://api.adaptionlab.com/v1'),
+  ADAPTION_AI_MODEL: z.string().optional().default('adaption-vision-pro'),
   GEMINI_API_KEY: z.string().optional().default('')
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
 
 if (!parsedEnv.success) {
-  console.error('❌ Invalid environment variables:', parsedEnv.error.format());
-  throw new Error('Invalid environment configuration. Check your .env file.');
+  console.error('❌ Invalid environment configuration:', parsedEnv.error.format());
+  throw new Error('Invalid environment configuration. Please check your .env file.');
 }
 
 export const ENV = parsedEnv.data;

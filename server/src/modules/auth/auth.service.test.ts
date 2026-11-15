@@ -49,7 +49,7 @@ describe('AuthService Unit Tests', () => {
 
     assert.equal(result.user.name, 'Test Engineer');
     assert.equal(result.user.email, 'engineer@example.com');
-    assert.equal(result.user.role, 'USER');
+    assert.equal(result.user.role, 'ELDERLY');
     assert.ok(result.token, 'Token must be generated');
 
     // Verify stored password in repository was hashed

@@ -3,12 +3,13 @@ import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { ENV } from '../config/env';
 import { ApiError } from '../utils/apiError';
+import { UserRole } from '../types/express';
 
 // Strict runtime schema validation for JWT payload
 export const jwtPayloadSchema = z.object({
   id: z.string().min(1, 'Token must contain a valid subject id'),
   email: z.string().email('Token must contain a valid email address'),
-  role: z.enum(['USER', 'ADMIN'])
+  role: z.enum(['ELDERLY', 'CAREGIVER', 'FAMILY', 'ADMIN'])
 });
 
 export type AuthenticatedUser = z.infer<typeof jwtPayloadSchema>;
@@ -52,7 +53,7 @@ export const authenticateJwt = (req: Request, res: Response, next: NextFunction)
 /**
  * Role-Based Access Control (RBAC) Middleware
  */
-export const requireRole = (...allowedRoles: Array<'USER' | 'ADMIN'>) => {
+export const requireRole = (...allowedRoles: UserRole[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
       return next(ApiError.unauthorized('Authentication required'));

@@ -4,13 +4,14 @@ import { IAuthRepository } from './auth.repository';
 import { RegisterInput, LoginInput } from './auth.schema';
 import { ApiError } from '../../utils/apiError';
 import { ENV } from '../../config/env';
+import { UserRole } from '../../types/express';
 
 export interface AuthResult {
   user: {
     id: string;
     name: string;
     email: string;
-    role: string;
+    role: UserRole;
   };
   token: string;
 }
@@ -36,17 +37,18 @@ export class AuthService implements IAuthService {
     const newUser = await this.authRepository.create({
       name: input.name,
       email: input.email,
-      password: hashedPassword
+      password: hashedPassword,
+      role: (input.role as any) || 'ELDERLY'
     });
 
-    const token = this.generateToken(newUser.id, newUser.email, newUser.role);
+    const token = this.generateToken(newUser.id, newUser.email, newUser.role as UserRole);
 
     return {
       user: {
         id: newUser.id,
         name: newUser.name,
         email: newUser.email,
-        role: newUser.role
+        role: newUser.role as UserRole
       },
       token
     };
@@ -63,14 +65,14 @@ export class AuthService implements IAuthService {
       throw ApiError.unauthorized('Invalid email or password');
     }
 
-    const token = this.generateToken(user.id, user.email, user.role);
+    const token = this.generateToken(user.id, user.email, user.role as UserRole);
 
     return {
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role as UserRole
       },
       token
     };
@@ -86,7 +88,7 @@ export class AuthService implements IAuthService {
     return sanitizedUser;
   }
 
-  private generateToken(id: string, email: string, role: string): string {
+  private generateToken(id: string, email: string, role: UserRole): string {
     return jwt.sign(
       { id, email, role },
       ENV.JWT_SECRET,

@@ -11,8 +11,11 @@ import { ApiError } from './utils/apiError';
 // Routes
 import authRoutes from './modules/auth/auth.routes';
 import healthRoutes from './modules/health/health.routes';
-import projectRoutes from './modules/project/project.routes';
 import aiRoutes from './modules/ai/ai.routes';
+import careCircleRoutes from './modules/care-circle/careCircle.routes';
+import medicationRoutes from './modules/medication/medication.routes';
+import appointmentRoutes from './modules/appointment/appointment.routes';
+import alertRoutes from './modules/alerts/alert.routes';
 
 const app: Application = express();
 
@@ -65,7 +68,10 @@ app.use('/api', apiRateLimiter);
 // 6. Application Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/projects', projectRoutes);
+app.use('/api/care-circle', careCircleRoutes);
+app.use('/api/medications', medicationRoutes);
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/alerts', alertRoutes);
 app.use('/api/ai', aiRoutes);
 
 // 7. 404 Route Handler

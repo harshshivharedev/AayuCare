@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AayuCare - Functional Requirements Specification</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+  
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1e293b;
+    line-height: 1.55;
+    font-size: 11pt;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+  }
+
+  .header {
+    border-bottom: 2px solid #2563eb;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+  }
+
+  .badge-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+  }
+
+  .badge.orange {
+    background: #fff7ed;
+    color: #c2410c;
+    border-color: #fed7aa;
+  }
+
+  .badge.green {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #bbf7d0;
+  }
+
+  h1 {
+    font-size: 22pt;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    font-size: 11pt;
+    color: #64748b;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  h2 {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #0f172a;
+    border-left: 4px solid #2563eb;
+    padding-left: 10px;
+    margin: 24px 0 10px 0;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 14px 0 6px 0;
+    page-break-after: avoid;
+  }
+
+  p {
+    margin: 0 0 8px 0;
+    color: #334155;
+  }
+
+  ul, ol {
+    margin: 0 0 12px 0;
+    padding-left: 20px;
+    color: #334155;
+  }
+
+  li {
+    margin-bottom: 4px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 16px 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+
+  th, td {
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: #f8fafc;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    page-break-inside: avoid;
+  }
+
+  .callout-box {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 10pt;
+    color: #1e40af;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .danger-box {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 10pt;
+    color: #991b1b;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  .footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 8pt;
+    color: #94a3b8;
+    text-align: right;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge-container">
+    <span class="badge">Catalyst x PromptWars 2026</span>
+    <span class="badge green">Google for Developers</span>
+    <span class="badge orange">Adaption AI Supported</span>
+  </div>
+  <h1>AayuCare (आयु-Care)</h1>
+  <p class="subtitle">System Functional Requirements Specification (SRS) • Elderly Care & Medication Platform</p>
+</div>
+
+<h2>1. Executive Project Mission & Core Problem Statement</h2>
+<div class="callout-box">
+  <strong>Slide 13 Official Mandate:</strong> Develop a smart, interconnected healthcare management platform helping elderly individuals manage daily medications, medical appointments, and healthcare routines while keeping family members and caretakers informed through secure passcode-based access and proactive email reminders, ensuring elders remain at the center of their own healthcare decisions.
+</div>
+
+<p>
+  <strong>AayuCare</strong> bridges the critical human gap between elderly individuals, their busy caretakers, and clinical prescriptions. Unlike conventional reminder apps that demand manual smartphone interactions, AayuCare acts as a <em>zero-cognitive-burden ambient companion</em> utilizing real visual pill identification, natural voice confirmation, anti-overdose locks, and proactive family escalation.
+</p>
+
+<h2>2. System Actors & Persona Roles</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Persona</th>
+      <th style="width: 35%;">Responsibility / Access</th>
+      <th style="width: 40%;">Primary Touchpoint</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Elderly Patient (Babuji/Mataji)</strong></td>
+      <td>Consumer of care. Views visual pills, hears audio announcements, marks consumed via voice or 1-tap.</td>
+      <td>Passive Ambient Tablet / Bedside Phone (Zero complex menus, massive accessible buttons).</td>
+    </tr>
+    <tr>
+      <td><strong>Primary Caregiver (Daughter/Son/Nurse)</strong></td>
+      <td>Administrator. Uploads prescriptions, binds pill photos, edits schedules, handles escalations.</td>
+      <td>Caretaker Cockpit (Passcode-linked, schedule manager, adherence charts).</td>
+    </tr>
+    <tr>
+      <td><strong>Family Observer (Relative)</strong></td>
+      <td>Observer. Views weekly adherence, appointment dates, and emergency alerts.</td>
+      <td>Mobile Web Dashboard (Read-only status sync via CarePasscode).</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>3. Detailed Functional Modules Specification</h2>
+
+<h3>Module 1: Shared Ecosystem & CarePasscode Access (FR-1)</h3>
+<ul>
+  <li><strong>FR-1.1 (Elder Profile Creation):</strong> Admin or elder creates profile with Name, Age, Blood Group, Primary Physician, and Emergency Phone.</li>
+  <li><strong>FR-1.2 (Unique CarePasscode):</strong> System generates a 6-character hashed access key (e.g. <code>CARE-8492</code>).</li>
+  <li><strong>FR-1.3 (Zero-Friction Caretaker Pairing):</strong> Family members link to the elder profile simply by supplying the CarePasscode, eliminating multi-account onboarding friction.</li>
+  <li><strong>FR-1.4 (Role-Based Access Control):</strong> Separation between <code>PRIMARY_CAREGIVER</code> (full write permissions) and <code>FAMILY_OBSERVER</code> (read-only audit access).</li>
+</ul>
+
+<h3>Module 2: Smart Prescription Ingestion & Dietary Guidance (FR-2)</h3>
+<ul>
+  <li><strong>FR-2.1 (Vision AI Prescription Extraction):</strong> Caretaker uploads a photo of the clinical prescription. Adaption AI / Multimodal Vision extracts:
+    <ul>
+      <li>Medication names, dosage metrics (e.g., 500mg, 1 tablet), and timing frequency.</li>
+      <li><strong>Dietary Guidelines & Warnings:</strong> Specific clinical rules (e.g., <em>"Take post-meal"</em>, <em>"Avoid grapefruit or high-potassium foods"</em>).</li>
+    </ul>
+  </li>
+  <li><strong>FR-2.2 (Visual Pill Photo Binding):</strong> Caretaker snaps an actual photo of the physical tablet strip/capsule, attaching it to the medication schedule for elder visual recognition.</li>
+  <li><strong>FR-2.3 (Criticality Tagging):</strong>
+    <ul>
+      <li><span style="color: #b91c1c; font-weight: 700;">🔴 High-Risk Meds:</span> Blood pressure, diabetes, blood thinners, cardiac drugs (Triggers immediate 45-min proactive escalation on miss).</li>
+      <li><span style="color: #15803d; font-weight: 700;">🟢 Routine Meds:</span> Multivitamins, calcium, antacids (Silent adherence log).</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>Module 3: Ambient Visual Display & Voice-First Interaction (FR-3)</h3>
+<ul>
+  <li><strong>FR-3.1 (Scheduled Ambient Takeover):</strong> At the exact scheduled time, the device screen awakens with a full-screen display of the <strong>Real Tablet Photo</strong>, meal timing, and large bold instructions.</li>
+  <li><strong>FR-3.2 (Text-to-Speech Audio Announcement):</strong> The device synthesizes polite bilingual/Hindi voice audio:
+    <em>"Namaste Babuji, aapki subah ki BP wali goli ka time ho gaya hai. Kripya peeli wali goli lijiye."</em>
+  </li>
+  <li><strong>FR-3.3 (Dual Interaction Confirmation):</strong>
+    <ul>
+      <li><strong>Voice Input:</strong> Natural speech recognition listening for confirmation phrases (<em>"Kha li"</em>, <em>"Maine le li"</em>, <em>"Done"</em>).</li>
+      <li><strong>Giant Tap Redundancy:</strong> An unmissable 80px high green button (<code>[ ✔️ MAINE LE LI ]</code>) for environments with background fan/TV noise.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>Module 4: Adherence Tracking & Anti-Overdose Shield (FR-4)</h3>
+<ul>
+  <li><strong>FR-4.1 (State Tracking):</strong> Logs medication events under strict states: <code>SCHEDULED</code>, <code>TAKEN</code>, <code>MISSED</code>, <code>SKIPPED</code> with exact millisecond timestamps and confirmation method.</li>
+  <li><strong>FR-4.2 (Anti-Double-Dosing Lockout Shield):</strong> Once marked taken, that slot locks into an active Green Shield for 6 hours:
+    <em>"Babuji, aapne 9:15 AM par ye dose le li hai. Agli dose raat 8:00 PM ko hai."</em> Prevents dementia-related fatal repeat consumption.</li>
+  <li><strong>FR-4.3 (Clinical Catch-Up Window):</strong> If an elder attempts to consume a dose >3 hours late, the AI advises:
+    <em>"Dawai ka samay nikal chuka hai. Kripya double dose na lein, agli dose nirdharit samay par lein."</em></li>
+</ul>
+
+<div class="page-break"></div>
+
+<h3>Module 5: Proactive Family Escalation & Email Engine (FR-5)</h3>
+<ul>
+  <li><strong>FR-5.1 (Automated Escalation Protocol):</strong>
+    <ul>
+      <li><code>T + 0 min:</code> Gentle elder chime and audio announcement.</li>
+      <li><code>T + 30 min:</code> Secondary gentle nudge to elder.</li>
+      <li><code>T + 45 min:</code> <strong>Critical Escalation:</strong> Automated email alert dispatched to Primary Caretaker with patient name, overdue medication, and direct call trigger.</li>
+    </ul>
+  </li>
+  <li><strong>FR-5.2 (Appointment Alert Dispatcher):</strong> Automated email reminders dispatched 24 hours and 2 hours prior to scheduled doctor visits.</li>
+</ul>
+
+<h3>Module 6: Doctor Appointments & Clinical Summary Briefcase (FR-6)</h3>
+<ul>
+  <li><strong>FR-6.1 (Appointment Scheduler):</strong> Doctor name, medical specialty (Cardiology, Orthopedics), clinic address, appointment date/time, and pre-visit consultation notes.</li>
+  <li><strong>FR-6.2 (1-Click Clinical Adherence Passport):</strong> Single-button generation of a 30-day compliance summary for doctors (Adherence rate percentage, missed dates list, active drug schedule).</li>
+</ul>
+
+<h3>Module 7: Caretaker Cockpit & Live Telemetry (FR-7)</h3>
+<ul>
+  <li><strong>FR-7.1 (Live Adherence Metrics):</strong> Real-time percentage scorecard (e.g. 94% weekly adherence score).</li>
+  <li><strong>FR-7.2 (Real-Time Activity Feed):</strong> Audit log showing every elder interaction (e.g., <em>"Babuji confirmed Metformin via voice at 9:02 AM"</em>).</li>
+  <li><strong>FR-7.3 (Single-Click Emergency SOS):</strong> One-touch distress beacon broadcasting to all care-circle members.</li>
+</ul>
+
+<h2>4. Technical Implementation & Architecture Mapping</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Layer</th>
+      <th>Technology / Pattern</th>
+      <th>Responsibilities</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Frontend Client</strong></td>
+      <td>React 19 + Tailwind CSS + Lucide + Web Speech API</td>
+      <td>Dual Mode (Accessible Elder Companion & Responsive Caretaker Cockpit).</td>
+    </tr>
+    <tr>
+      <td><strong>API & Security</strong></td>
+      <td>Node.js Express + TypeScript + Zod + Helmet + RateLimiter</td>
+      <td>1MB body limiter, strict CORS whitelist, HttpOnly cookie authentication.</td>
+    </tr>
+    <tr>
+      <td><strong>Architecture Pattern</strong></td>
+      <td>Strict 3-Tier SOLID LLD</td>
+      <td>Decoupled Controller $\to$ Service $\to$ Repository contracts.</td>
+    </tr>
+    <tr>
+      <td><strong>Database & ORM</strong></td>
+      <td>PostgreSQL + Prisma ORM</td>
+      <td>Connection pooled, indexed relational models with audit logs.</td>
+    </tr>
+    <tr>
+      <td><strong>AI Intelligence</strong></td>
+      <td>Adaption AI & Gemini 2.5 Flash Strategy Adapter</td>
+      <td>Prescription OCR, drug interaction checks, dietary guidelines parser.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>5. Success & Compliance Verification</h2>
+<div class="card">
+  <p><strong>Verification Against Catalyst Hackathon Rules:</strong></p>
+  <ul>
+    <li>✔ <strong>Code Quality & Scalability:</strong> Clean repository with SOLID principles, interfaces, and separation of concerns.</li>
+    <li>✔ <strong>Automated Unit Tests:</strong> Complete unit test suite verifying repository substitution (LSP) and auth logic.</li>
+    <li>✔ <strong>100% Problem Alignment:</strong> Passcode access, medication management, adherence tracking, doctor visits, and proactive email escalations all fully specified.</li>
+  </ul>
+</div>
+
+<div class="footer">
+  AayuCare System Specification • Catalyst Hackathon 2026 • Confidential
+</div>
+
+</body>
+</html>

@@ -31,19 +31,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPair }) => {
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 gap-1 sm:gap-4">
           {/* 1. Brand Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/30">
-              <HeartPulse className="w-6 h-6 stroke-[2.2]" />
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/30">
+              <HeartPulse className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2]" />
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-xl tracking-tight text-slate-900">
+              <div className="flex items-center gap-1">
+                <span className="font-extrabold text-base sm:text-xl tracking-tight text-slate-900">
                   Aayu<span className="text-teal-600">Care</span>
                 </span>
-                <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200 font-hindi">
+                <span className="hidden min-[420px]:inline-block text-[10px] sm:text-xs font-semibold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200 font-hindi">
                   आयु-Care
                 </span>
               </div>
@@ -54,41 +54,44 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPair }) => {
           </div>
 
           {/* 2. Middle Persona Switcher (Clean Medical Tab Pill) */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80">
+          <div className="flex items-center bg-slate-100 p-0.5 sm:p-1 rounded-xl border border-slate-200/80 shrink-0">
             <button
               onClick={() => setActiveMode('ELDER')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeMode === 'ELDER'
                   ? 'bg-white text-teal-700 shadow-sm border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <span>👴</span>
-              <span>{t.dadaJiView}</span>
+              <span className="hidden sm:inline">{t.dadaJiView}</span>
+              <span className="sm:hidden text-[11px] font-medium">{language === 'hi' ? 'दादा जी' : 'Dada Ji'}</span>
             </button>
             <button
               onClick={() => setActiveMode('CAREGIVER')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeMode === 'CAREGIVER'
                   ? 'bg-white text-teal-700 shadow-sm border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Users className="w-3.5 h-3.5 text-teal-600" />
-              <span>{t.caretakerView}</span>
+              <span className="hidden sm:inline">{t.caretakerView}</span>
+              <span className="sm:hidden text-[11px] font-medium">{language === 'hi' ? 'देखभाल' : 'Care'}</span>
             </button>
           </div>
 
           {/* 3. Right Action Area */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
             {/* Language Switcher Pill */}
             <button
               onClick={() => setLanguage(language === 'hi' ? 'en' : 'hi')}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-xs transition"
+              className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-xs transition"
               title={language === 'hi' ? 'Switch to English' : 'हिंदी में बदलें'}
             >
               <Languages className="w-3.5 h-3.5 text-teal-600" />
-              <span>{language === 'hi' ? '🇮🇳 हिंदी' : '🇬🇧 English'}</span>
+              <span className="hidden sm:inline">{language === 'hi' ? '🇮🇳 हिंदी' : '🇬🇧 English'}</span>
+              <span className="sm:hidden text-[11px]">{language === 'hi' ? '🇮🇳 HI' : '🇬🇧 EN'}</span>
             </button>
 
             {/* If in Elder mode, show Elder's Passcode pill so caregiver can link */}
@@ -111,7 +114,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPair }) => {
                     const selected = linkedElders.find((el) => el.id === e.target.value);
                     if (selected) setActiveElder(selected);
                   }}
-                  className="text-xs font-semibold bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="max-w-[100px] sm:max-w-none text-xs font-semibold bg-white border border-slate-300 rounded-lg px-2 sm:px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 truncate"
                 >
                   {linkedElders.map((el) => (
                     <option key={el.id} value={el.id}>
@@ -135,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPair }) => {
 
             {/* User Profile or Login */}
             {user ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <div className="hidden sm:flex flex-col text-right">
                   <span className="text-xs font-bold text-slate-800 leading-tight">
                     {user.name}
@@ -155,10 +158,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPair }) => {
             ) : (
               <button
                 onClick={onOpenAuth}
-                className="inline-flex items-center gap-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-3.5 py-2 rounded-xl transition shadow-sm shadow-teal-600/20"
+                className="inline-flex items-center gap-1 sm:gap-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl transition shadow-sm shadow-teal-600/20"
               >
                 <LogIn className="w-3.5 h-3.5" />
-                <span>Sign In</span>
+                <span className="hidden min-[400px]:inline">Sign In</span>
               </button>
             )}
           </div>

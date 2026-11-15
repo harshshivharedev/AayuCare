@@ -304,12 +304,12 @@ export const VisualPillbox: React.FC = () => {
   return (
     <div className="space-y-5">
       {/* 1. Header & Adherence Counter Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse" />
-              <h2 className="text-lg font-bold text-slate-900">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900">
                 {t.todaySchedule}
               </h2>
             </div>
@@ -320,10 +320,10 @@ export const VisualPillbox: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between sm:justify-end gap-2.5">
             {pillboxData?.summary && (
-              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700">
-                <CheckCircle2 className="w-4 h-4 text-teal-600" />
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-50 border border-slate-200 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700">
+                <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0" />
                 <span>
                   {pillboxData.summary.takenDoses} / {pillboxData.summary.totalDoses}{' '}
                   {language === 'hi' ? 'खुराक ली गई' : 'doses taken'}
@@ -334,7 +334,7 @@ export const VisualPillbox: React.FC = () => {
             <button
               onClick={fetchPillbox}
               title="Refresh Schedule"
-              className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition"
+              className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition shrink-0"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-teal-600' : ''}`} />
             </button>
@@ -363,7 +363,7 @@ export const VisualPillbox: React.FC = () => {
         )}
 
         {/* 3. Slot Selector Tabs */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-5 pt-4 border-t border-slate-100">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-slate-100">
           {slotTabs.map((slot) => {
             const Icon = slot.icon;
             const isSelected = activeSlot === slot.id;
@@ -373,19 +373,19 @@ export const VisualPillbox: React.FC = () => {
               <button
                 key={slot.id}
                 onClick={() => setActiveSlot(slot.id)}
-                className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${
+                className={`flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-xl border transition-all ${
                   isSelected
                     ? 'bg-teal-50 border-teal-500 text-teal-900 shadow-xs'
                     : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-600'
                 }`}
               >
-                <div className="flex items-center gap-1.5">
-                  <Icon className={`w-4 h-4 ${isSelected ? 'text-teal-600' : 'text-slate-400'}`} />
-                  <span className="text-sm font-bold">
+                <div className="flex items-center gap-1 sm:gap-1.5">
+                  <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isSelected ? 'text-teal-600' : 'text-slate-400'}`} />
+                  <span className="text-xs sm:text-sm font-bold">
                     {language === 'hi' ? slot.labelHi : slot.labelEn}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-1 text-[11px]">
+                <div className="flex items-center gap-1 sm:gap-1.5 mt-1 text-[10px] sm:text-[11px]">
                   <span className={isSelected ? 'text-teal-700 font-medium' : 'text-slate-400'}>
                     {slot.timeHint}
                   </span>
@@ -446,11 +446,11 @@ export const VisualPillbox: React.FC = () => {
                 {/* Status Bar Indicator */}
                 <div className={`h-1.5 w-full ${isTaken ? 'bg-emerald-500' : 'bg-teal-500'}`} />
 
-                <div className="p-5 space-y-4">
+                <div className="p-4 sm:p-5 space-y-3.5 sm:space-y-4">
                   {/* Top Row: Pill Strip Photo & Name */}
-                  <div className="flex gap-4 items-start">
+                  <div className="flex gap-3 sm:gap-4 items-start">
                     {/* Tablet Strip Photo uploaded by Caregiver */}
-                    <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center">
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center">
                       {item.pillImageUrl ? (
                         <img
                           src={item.pillImageUrl}
@@ -464,7 +464,7 @@ export const VisualPillbox: React.FC = () => {
                         />
                       ) : (
                         <div className="w-full h-full bg-teal-50 text-teal-600 flex flex-col items-center justify-center text-center p-1">
-                          <Pill className="w-7 h-7 mb-0.5" />
+                          <Pill className="w-6 h-6 sm:w-7 sm:h-7 mb-0.5" />
                           <span className="text-[9px] font-bold uppercase text-teal-700">Strip</span>
                         </div>
                       )}
@@ -472,16 +472,16 @@ export const VisualPillbox: React.FC = () => {
                       {/* Taken Overlay Badge */}
                       {isTaken && (
                         <div className="absolute inset-0 bg-emerald-900/60 flex items-center justify-center text-white backdrop-blur-[1px]">
-                          <CheckCircle2 className="w-7 h-7" />
+                          <CheckCircle2 className="w-6 h-6 sm:w-7 sm:h-7" />
                         </div>
                       )}
                     </div>
 
                     {/* Details */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center justify-between gap-1.5">
                         <span
-                          className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
+                          className={`text-[10px] font-bold uppercase px-1.5 sm:px-2 py-0.5 rounded border ${
                             item.criticality === 'HIGH_RISK'
                               ? 'bg-rose-50 text-rose-700 border-rose-200'
                               : 'bg-slate-100 text-slate-700 border-slate-200'
@@ -490,13 +490,13 @@ export const VisualPillbox: React.FC = () => {
                           {item.criticality === 'HIGH_RISK' ? 'Critical' : 'Routine'}
                         </span>
 
-                        <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
+                        <span className="text-xs font-semibold text-slate-500 flex items-center gap-1 shrink-0">
                           <Clock className="w-3.5 h-3.5 text-slate-400" />
                           <span>{item.scheduledTime}</span>
                         </span>
                       </div>
 
-                      <h3 className="text-base font-bold text-slate-900 truncate mt-1">
+                      <h3 className="text-sm sm:text-base font-bold text-slate-900 truncate mt-1">
                         {item.name}
                       </h3>
 
@@ -504,8 +504,8 @@ export const VisualPillbox: React.FC = () => {
                         {item.dosage}
                       </p>
 
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md border ${mealBadge.color}`}>
+                      <div className="mt-1.5 sm:mt-2 flex flex-wrap gap-1.5">
+                        <span className={`inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-md border ${mealBadge.color}`}>
                           <Utensils className="w-3 h-3" />
                           <span>{mealBadge.text}</span>
                         </span>
@@ -515,10 +515,10 @@ export const VisualPillbox: React.FC = () => {
 
                   {/* Loving Caretaker Voice Guidance Box */}
                   <div className="bg-slate-50 border border-slate-200/90 rounded-xl p-3 space-y-2">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 text-slate-700">
-                        <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-                        <span className="text-xs font-bold">
+                        <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 shrink-0" />
+                        <span className="text-xs font-bold truncate">
                           {t.caretakerVoiceNote}
                         </span>
                       </div>
@@ -526,7 +526,7 @@ export const VisualPillbox: React.FC = () => {
                       {/* Listen Button */}
                       <button
                         onClick={() => handlePlayVoice(item)}
-                        className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg border transition ${
+                        className={`shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-2 sm:px-2.5 py-1 rounded-lg border transition ${
                           isAudioPlaying
                             ? 'bg-teal-600 text-white border-teal-600'
                             : 'bg-white text-teal-700 border-teal-200 hover:bg-teal-50'
@@ -534,7 +534,7 @@ export const VisualPillbox: React.FC = () => {
                       >
                         {isAudioPlaying ? (
                           <>
-                            <VolumeX className="w-3.5 h-3.5 animate-pulse" />
+                            <VolumeX className="w-3.5 h-3.5 animate-pulse text-white" />
                             <span>{language === 'hi' ? 'रोकें' : 'Stop'}</span>
                           </>
                         ) : (
@@ -562,8 +562,8 @@ export const VisualPillbox: React.FC = () => {
                   {/* 5. Giant "मैंने खा ली ✅" Action Button */}
                   <div>
                     {isTaken ? (
-                      <div className="w-full py-2.5 px-4 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center justify-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <div className="w-full min-h-[46px] py-2.5 px-4 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center justify-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                         <span>
                           {t.doseTakenSuccess} {item.takenAt ? `(${new Date(item.takenAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})` : ''}
                         </span>
@@ -572,7 +572,7 @@ export const VisualPillbox: React.FC = () => {
                       <button
                         onClick={() => handleConfirmDose(item)}
                         disabled={confirmingId === item.id}
-                        className="w-full py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 active:scale-[0.99] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-sm shadow-teal-600/30 transition-all cursor-pointer"
+                        className="w-full min-h-[48px] py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 active:scale-[0.99] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-sm shadow-teal-600/30 transition-all cursor-pointer"
                       >
                         {confirmingId === item.id ? (
                           <>

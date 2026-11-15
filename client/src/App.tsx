@@ -37,18 +37,18 @@ export const App: React.FC = () => {
       />
 
       {/* 2. Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
         {/* If in ELDER MODE */}
         {activeMode === 'ELDER' ? (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Senior Friendly Top Banner */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-2xl shadow-2xs">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 sm:gap-3.5">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-xl sm:text-2xl shadow-2xs shrink-0">
                   👴
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <h1 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
                     <span>{t.greetingNamaste}, {elderProfile?.fullName || user?.name || 'Dada Ji'}</span>
                   </h1>
                   <p className="text-xs text-slate-500 mt-0.5">
@@ -63,7 +63,7 @@ export const App: React.FC = () => {
               </div>
 
               {/* SOS Emergency Call Button & Passcode Pill */}
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
                 {elderProfile && (
                   <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700">
                     <span>{t.pairCodeLabel}:</span>
@@ -74,7 +74,7 @@ export const App: React.FC = () => {
                 )}
                 <a
                   href={`tel:${elderProfile?.emergencyContact || '+919876543210'}`}
-                  className="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-sm shadow-rose-600/20"
+                  className="inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold px-4 py-2.5 sm:py-2.5 rounded-xl transition shadow-sm shadow-rose-600/20 w-full sm:w-auto"
                 >
                   <PhoneCall className="w-4 h-4" />
                   <span>{t.emergencySos}</span>
@@ -87,14 +87,14 @@ export const App: React.FC = () => {
           </div>
         ) : (
           /* CAREGIVER DASHBOARD MODE */
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Caregiver Welcome Banner */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
               <div>
-                <span className="text-[11px] font-bold text-teal-700 uppercase tracking-wider bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
+                <span className="text-[10px] sm:text-[11px] font-bold text-teal-700 uppercase tracking-wider bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
                   Caregiver Executive Dashboard
                 </span>
-                <h1 className="text-xl font-bold text-slate-900 mt-1">
+                <h1 className="text-lg sm:text-xl font-bold text-slate-900 mt-1">
                   Monitoring: {activeElder?.fullName || 'Elder Care Circle'}
                 </h1>
                 <p className="text-xs text-slate-500">
@@ -102,10 +102,10 @@ export const App: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsPairOpen(true)}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 transition"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 transition"
                 >
                   <span>Link New Elder</span>
                 </button>
@@ -113,55 +113,55 @@ export const App: React.FC = () => {
             </div>
 
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs">
                 <div className="flex items-center justify-between text-slate-500 mb-1">
                   <span className="text-xs font-semibold">Today's Adherence</span>
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 </div>
-                <div className="text-2xl font-extrabold text-slate-900">94%</div>
-                <div className="text-[11px] text-emerald-600 font-medium mt-0.5">
+                <div className="text-xl sm:text-2xl font-extrabold text-slate-900">94%</div>
+                <div className="text-[10px] sm:text-[11px] text-emerald-600 font-medium mt-0.5">
                   56 of 60 doses taken on-time
                 </div>
               </div>
 
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+              <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs">
                 <div className="flex items-center justify-between text-slate-500 mb-1">
                   <span className="text-xs font-semibold">Active Medications</span>
                   <Pill className="w-4 h-4 text-teal-600" />
                 </div>
-                <div className="text-2xl font-extrabold text-slate-900">2 Regimens</div>
-                <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                <div className="text-xl sm:text-2xl font-extrabold text-slate-900">2 Regimens</div>
+                <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
                   Telmisartan (BP) & Metformin (Sugar)
                 </div>
               </div>
 
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+              <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs">
                 <div className="flex items-center justify-between text-slate-500 mb-1">
                   <span className="text-xs font-semibold">Next Doctor Visit</span>
                   <Calendar className="w-4 h-4 text-blue-600" />
                 </div>
-                <div className="text-sm font-bold text-slate-900 mt-1">Dr. Arvind Sharma</div>
-                <div className="text-[11px] text-slate-500 font-medium">Cardiology (Max Hospital)</div>
+                <div className="text-xs sm:text-sm font-bold text-slate-900 mt-1 truncate">Dr. Arvind Sharma</div>
+                <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate">Cardiology (Max Saket)</div>
               </div>
 
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+              <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs">
                 <div className="flex items-center justify-between text-slate-500 mb-1">
                   <span className="text-xs font-semibold">Safety Alerts</span>
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
                 </div>
-                <div className="text-2xl font-extrabold text-slate-900">All Clear</div>
-                <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                <div className="text-xl sm:text-2xl font-extrabold text-slate-900">All Clear</div>
+                <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5">
                   Zero critical escalations active
                 </div>
               </div>
             </div>
 
-            {/* Caregiver Navigation Tabs (Phase F3 & F4) */}
-            <div className="flex flex-wrap items-center gap-2 border-b border-slate-200/80 pb-3">
+            {/* Caregiver Navigation Tabs (Phase F3 & F4) - Mobile horizontal swipe scroll */}
+            <div className="flex items-center gap-2 border-b border-slate-200/80 pb-2 overflow-x-auto no-scrollbar -mx-3 px-3 sm:mx-0 sm:px-0">
               <button
                 onClick={() => setCaregiverTab('MEDICATIONS')}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                className={`shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
                   caregiverTab === 'MEDICATIONS'
                     ? 'bg-teal-600 text-white shadow-xs'
                     : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
@@ -173,7 +173,7 @@ export const App: React.FC = () => {
 
               <button
                 onClick={() => setCaregiverTab('APPOINTMENTS')}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                className={`shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
                   caregiverTab === 'APPOINTMENTS'
                     ? 'bg-teal-600 text-white shadow-xs'
                     : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
@@ -185,7 +185,7 @@ export const App: React.FC = () => {
 
               <button
                 onClick={() => setCaregiverTab('ALERTS')}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                className={`shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
                   caregiverTab === 'ALERTS'
                     ? 'bg-teal-600 text-white shadow-xs'
                     : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'

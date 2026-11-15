@@ -170,13 +170,13 @@ export const ClinicalBriefcaseModal: React.FC<ClinicalBriefcaseModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-3xl w-full border border-slate-200 shadow-2xl overflow-hidden my-8 animate-fade-in">
         {/* Modal Top Header */}
-        <div className="p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-xs">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-xs shrink-0">
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
                 <span>30-Day Clinical Briefcase for Doctor Visit</span>
                 <span className="text-[10px] font-semibold bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full uppercase tracking-wider">
                   Audit Ready
@@ -188,7 +188,7 @@ export const ClinicalBriefcaseModal: React.FC<ClinicalBriefcaseModalProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between sm:justify-end gap-2">
             <button
               onClick={handlePrint}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-xs transition"
@@ -215,7 +215,7 @@ export const ClinicalBriefcaseModal: React.FC<ClinicalBriefcaseModalProps> = ({
             </p>
           </div>
         ) : data ? (
-          <div className="p-6 space-y-5 max-h-[78vh] overflow-y-auto">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 max-h-[80vh] overflow-y-auto">
             {/* 1. Patient Vitals Card */}
             <div className="bg-gradient-to-r from-teal-50 to-slate-50 rounded-2xl border border-teal-100 p-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -330,8 +330,8 @@ export const ClinicalBriefcaseModal: React.FC<ClinicalBriefcaseModalProps> = ({
               <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
                 Active Regimens Being Taken ({data.activeRegimens.length})
               </h4>
-              <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
-                <table className="w-full text-left text-xs">
+              <div className="border border-slate-200 rounded-xl overflow-x-auto bg-white -mx-1 sm:mx-0">
+                <table className="w-full min-w-[500px] text-left text-xs">
                   <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
                     <tr>
                       <th className="p-3">Medication</th>

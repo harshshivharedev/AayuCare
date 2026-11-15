@@ -188,8 +188,8 @@ export const MedicineStudio: React.FC = () => {
   return (
     <div className="space-y-5">
       {/* 1. Header & Quick Actions */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div>
             <div className="flex items-center gap-2">
               <Pill className="w-5 h-5 text-teal-600" />
@@ -202,10 +202,10 @@ export const MedicineStudio: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
             <button
               onClick={() => setShowAiScanner(!showAiScanner)}
-              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition ${
+              className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition ${
                 showAiScanner
                   ? 'bg-teal-600 text-white border-teal-600 shadow-xs'
                   : 'bg-white text-teal-700 border-teal-200 hover:bg-teal-50'
@@ -220,7 +220,7 @@ export const MedicineStudio: React.FC = () => {
                 setSelectedAiMed(null);
                 setIsAddModalOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 bg-teal-600 hover:bg-teal-700 active:scale-[0.99] text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm shadow-teal-600/20 transition cursor-pointer"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 bg-teal-600 hover:bg-teal-700 active:scale-[0.99] text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm shadow-teal-600/20 transition cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Add Medicine</span>
@@ -254,8 +254,8 @@ export const MedicineStudio: React.FC = () => {
 
       {/* 3. Search and Active Regimens List */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="relative flex-1 max-w-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="relative flex-1 max-w-sm w-full">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             <input
               type="text"
@@ -266,7 +266,7 @@ export const MedicineStudio: React.FC = () => {
             />
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 justify-between sm:justify-end">
             <span>Active Regimens:</span>
             <span className="bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full font-bold">
               {medications.length}
@@ -288,7 +288,7 @@ export const MedicineStudio: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {filteredMeds.map((med) => {
               const isPlaying = playingId === med.id;
 

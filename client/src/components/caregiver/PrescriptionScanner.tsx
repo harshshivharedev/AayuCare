@@ -160,14 +160,14 @@ export const PrescriptionScanner: React.FC<PrescriptionScannerProps> = ({
         </div>
       </div>
 
-      <div className="p-5 space-y-4">
+      <div className="p-4 sm:p-5 space-y-4">
         {/* Sample Prescription Presets */}
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
             <span className="text-xs font-bold text-slate-700">
               Paste Doctor's Rx or choose a sample:
             </span>
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
               {SAMPLE_PRESCRIPTIONS.map((preset, idx) => (
                 <button
                   key={idx}
@@ -192,9 +192,9 @@ export const PrescriptionScanner: React.FC<PrescriptionScannerProps> = ({
 
         {/* Dietary Preference & Action */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-          <div className="flex items-center gap-2">
-            <Utensils className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-xs text-slate-600 font-medium">Dietary Context:</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <Utensils className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span className="text-xs text-slate-600 font-medium shrink-0">Dietary Context:</span>
             <select
               value={dietaryPref}
               onChange={(e) => setDietaryPref(e.target.value)}
@@ -209,7 +209,7 @@ export const PrescriptionScanner: React.FC<PrescriptionScannerProps> = ({
           <button
             onClick={handleScan}
             disabled={loading}
-            className="inline-flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 active:scale-[0.99] text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm shadow-teal-600/20 cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 active:scale-[0.99] text-white text-xs font-bold px-4 py-2.5 sm:py-2 rounded-xl transition shadow-sm shadow-teal-600/20 cursor-pointer"
           >
             {loading ? (
               <>

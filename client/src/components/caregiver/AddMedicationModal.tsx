@@ -219,13 +219,13 @@ export const AddMedicationModal: React.FC<AddMedicationModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-2xl w-full border border-slate-200 shadow-xl overflow-hidden my-8 animate-fade-in">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-xs">
-              <Pill className="w-5 h-5" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-xs shrink-0">
+              <Pill className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">
+              <h2 className="text-sm sm:text-base font-bold text-slate-900">
                 Add Medication to Visual Pillbox
               </h2>
               <p className="text-xs text-slate-500">
@@ -243,7 +243,7 @@ export const AddMedicationModal: React.FC<AddMedicationModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 max-h-[80vh] overflow-y-auto">
           {error && (
             <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
@@ -342,8 +342,8 @@ export const AddMedicationModal: React.FC<AddMedicationModalProps> = ({
           </div>
 
           {/* Row 4: Tablet Strip Photo Upload */}
-          <div className="space-y-2 p-4 rounded-xl bg-slate-50 border border-slate-200">
-            <div className="flex items-center justify-between">
+          <div className="space-y-2 p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                 <ImageIcon className="w-3.5 h-3.5 text-teal-600" />
                 <span>Tablet Strip Photo (दवा के पत्ते की फोटो)</span>
@@ -351,7 +351,7 @@ export const AddMedicationModal: React.FC<AddMedicationModalProps> = ({
               <span className="text-[11px] text-slate-500">Helps elder identify instantly</span>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               {/* Preview Thumbnail */}
               <div className="w-16 h-16 rounded-xl bg-white border border-slate-200 shrink-0 flex items-center justify-center overflow-hidden">
                 {pillImageUrl ? (
@@ -381,8 +381,8 @@ export const AddMedicationModal: React.FC<AddMedicationModalProps> = ({
           </div>
 
           {/* Row 5: Caretaker Voice Guidance */}
-          <div className="space-y-2 p-4 rounded-xl bg-teal-50/50 border border-teal-200">
-            <div className="flex items-center justify-between">
+          <div className="space-y-2 p-3.5 sm:p-4 rounded-xl bg-teal-50/50 border border-teal-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <label className="text-xs font-bold text-teal-900 flex items-center gap-1.5">
                 <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
                 <span>Caretaker Voice Guidance (आपकी आवाज में सलाह)</span>
@@ -400,7 +400,7 @@ export const AddMedicationModal: React.FC<AddMedicationModalProps> = ({
               />
 
               {/* Microphone Recorder & Audio Preview */}
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   {isRecording ? (
                     <button

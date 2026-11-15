@@ -1,113 +1,156 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Activity, ShieldCheck, HeartPulse, User as UserIcon, LogOut, Key } from 'lucide-react';
+import {
+  HeartPulse,
+  UserCheck,
+  ShieldAlert,
+  LogOut,
+  LogIn,
+  KeyRound,
+  Users,
+  ChevronDown
+} from 'lucide-react';
 
 interface NavbarProps {
   onOpenAuth: () => void;
-  systemHealth: string;
-  activeMode: 'elder' | 'caregiver';
-  onModeChange: (mode: 'elder' | 'caregiver') => void;
-  passcode?: string;
+  onOpenPair: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({
-  onOpenAuth,
-  systemHealth,
-  activeMode,
-  onModeChange,
-  passcode = 'CARE-8421',
-}) => {
-  const { user, logout } = useAuth();
+export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPair }) => {
+  const {
+    user,
+    elderProfile,
+    activeMode,
+    setActiveMode,
+    linkedElders,
+    activeElder,
+    setActiveElder,
+    logout
+  } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/85 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-        {/* Brand / Logo */}
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <HeartPulse className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-black tracking-tight text-white">
-                Aayu<span className="text-emerald-400">Care</span>
-              </span>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800/60 font-mono">
-                आयु-Care
-              </span>
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* 1. Brand Logo */}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-600/30">
+              <HeartPulse className="w-6 h-6 stroke-[2.2]" />
             </div>
-            <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
-              Elderly Care & Medication Management Ecosystem
-            </p>
-          </div>
-        </div>
-
-        {/* Dual Mode Switcher Tabs */}
-        <div className="flex items-center bg-slate-900 border border-slate-800 p-1 rounded-2xl">
-          <button
-            onClick={() => onModeChange('elder')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 ${
-              activeMode === 'elder'
-                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-900/30'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <span>👴 Bedside Kiosk (बुज़ुर्ग मोड)</span>
-          </button>
-          <button
-            onClick={() => onModeChange('caregiver')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 ${
-              activeMode === 'caregiver'
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-900/30'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <span>🛡️ Caregiver Cockpit (देखभाल)</span>
-          </button>
-        </div>
-
-        {/* Status Badges & Auth */}
-        <div className="flex items-center gap-3">
-          {/* Passcode Pill */}
-          <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-indigo-500/30 text-xs text-indigo-300 font-mono font-bold">
-            <Key className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Passcode: {passcode}</span>
-          </div>
-
-          {/* Health indicator */}
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300">
-            <span
-              className={`w-2 h-2 rounded-full ${
-                systemHealth === 'UP' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
-              }`}
-            />
-            <Activity className="w-3.5 h-3.5 text-slate-400" />
-            <span>API: {systemHealth === 'UP' ? 'Operational' : 'Connecting...'}</span>
-          </div>
-
-          {/* User Section */}
-          {user ? (
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl text-xs text-slate-200">
-                <UserIcon className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="font-semibold">{user.name}</span>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-xl tracking-tight text-slate-900">
+                  Aayu<span className="text-teal-600">Care</span>
+                </span>
+                <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200 font-hindi">
+                  आयु-Care
+                </span>
               </div>
-              <button
-                onClick={logout}
-                className="p-2 text-slate-400 hover:text-rose-400 transition-colors"
-                title="Logout"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
+              <p className="text-[11px] font-medium text-slate-500 hidden sm:block">
+                Elderly Medication & Care Safety
+              </p>
             </div>
-          ) : (
+          </div>
+
+          {/* 2. Middle Persona Switcher (Clean Medical Tab Pill) */}
+          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80">
             <button
-              onClick={onOpenAuth}
-              className="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition-all rounded-xl shadow-md shadow-emerald-600/20"
+              onClick={() => setActiveMode('ELDER')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeMode === 'ELDER'
+                  ? 'bg-white text-teal-700 shadow-sm border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
-              Sign In
+              <span>👴</span>
+              <span>Dada Ji View</span>
             </button>
-          )}
+            <button
+              onClick={() => setActiveMode('CAREGIVER')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeMode === 'CAREGIVER'
+                  ? 'bg-white text-teal-700 shadow-sm border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5 text-teal-600" />
+              <span>Caretaker View</span>
+            </button>
+          </div>
+
+          {/* 3. Right Action Area */}
+          <div className="flex items-center gap-3">
+            {/* If in Elder mode, show Elder's Passcode pill so caregiver can link */}
+            {activeMode === 'ELDER' && elderProfile && (
+              <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-50 border border-teal-200 text-teal-800 text-xs font-medium">
+                <KeyRound className="w-3.5 h-3.5 text-teal-600" />
+                <span>Pair Code:</span>
+                <span className="font-bold tracking-wider font-mono bg-white px-1.5 py-0.5 rounded border border-teal-300">
+                  {elderProfile.carePasscode}
+                </span>
+              </div>
+            )}
+
+            {/* If in Caregiver mode and has linked elders, show switcher */}
+            {activeMode === 'CAREGIVER' && linkedElders.length > 0 && (
+              <div className="relative">
+                <select
+                  value={activeElder?.id || ''}
+                  onChange={(e) => {
+                    const selected = linkedElders.find((el) => el.id === e.target.value);
+                    if (selected) setActiveElder(selected);
+                  }}
+                  className="text-xs font-semibold bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                >
+                  {linkedElders.map((el) => (
+                    <option key={el.id} value={el.id}>
+                      {el.fullName} ({el.carePasscode})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Caregiver Pair button if no elder linked or want to link another */}
+            {user && (user.role === 'CAREGIVER' || user.role === 'FAMILY' || user.role === 'ADMIN') && (
+              <button
+                onClick={onOpenPair}
+                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-teal-600 text-teal-700 hover:bg-teal-50 transition"
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>Pair Elder</span>
+              </button>
+            )}
+
+            {/* User Profile or Login */}
+            {user ? (
+              <div className="flex items-center gap-2">
+                <div className="hidden sm:flex flex-col text-right">
+                  <span className="text-xs font-bold text-slate-800 leading-tight">
+                    {user.name}
+                  </span>
+                  <span className="text-[10px] text-slate-500 uppercase font-semibold">
+                    {user.role}
+                  </span>
+                </div>
+                <button
+                  onClick={logout}
+                  title="Logout"
+                  className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={onOpenAuth}
+                className="inline-flex items-center gap-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-3.5 py-2 rounded-xl transition shadow-sm shadow-teal-600/20"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </header>

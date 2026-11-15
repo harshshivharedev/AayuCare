@@ -1,14 +1,208 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useAuth } from './context/AuthContext';
+import { Navbar } from './components/Navbar';
+import { AuthModal } from './components/AuthModal';
+import { PairElderModal } from './components/PairElderModal';
+import {
+  HeartPulse,
+  Pill,
+  Calendar,
+  AlertTriangle,
+  FileText,
+  ShieldCheck,
+  CheckCircle2,
+  Sparkles,
+  PhoneCall
+} from 'lucide-react';
 
 export const App: React.FC = () => {
+  const { user, elderProfile, activeMode, setActiveMode, activeElder } = useAuth();
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isPairOpen, setIsPairOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-slate-800 border border-slate-700 rounded-2xl p-8 text-center space-y-4">
-        <h1 className="text-2xl font-bold text-white">AayuCare Platform</h1>
-        <p className="text-slate-400 text-sm">
-          Backend API Development in progress. UI will be rebuilt after backend completion.
-        </p>
-      </div>
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+      {/* 1. Global Navigation Bar */}
+      <Navbar
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenPair={() => setIsPairOpen(true)}
+      />
+
+      {/* 2. Main Container */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* If in ELDER MODE */}
+        {activeMode === 'ELDER' ? (
+          <div className="space-y-6">
+            {/* Senior Friendly Top Banner */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-2xl shadow-2xs">
+                  👴
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <span>Namaste, {elderProfile?.fullName || user?.name || 'Dada Ji'}</span>
+                    <span className="text-sm font-hindi text-teal-700 font-semibold bg-teal-50 px-2 py-0.5 rounded-md">
+                      नमस्ते
+                    </span>
+                  </h1>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {new Date().toLocaleDateString('en-IN', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              {/* SOS Emergency Call Button */}
+              <div className="flex items-center gap-3">
+                <a
+                  href={`tel:${elderProfile?.emergencyContact || '+919876543210'}`}
+                  className="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-sm shadow-rose-600/20"
+                >
+                  <PhoneCall className="w-4 h-4" />
+                  <span>Emergency SOS Call</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Elder Mode Placeholder / Ready to load Pillbox */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center space-y-4 shadow-xs">
+              <div className="w-14 h-14 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center mx-auto border border-teal-200">
+                <Pill className="w-7 h-7" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">
+                  Phase F1 Connected: Foundation & Role Switcher Ready
+                </h3>
+                <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+                  Dada Ji's Mode is active. Next in <b>Phase F2</b>, we are rendering the real-time{' '}
+                  <b>Today's Visual Pillbox</b> with actual tablet photos, Caretaker's loving voice guidance, and the giant{' '}
+                  <b>"Maine Kha Li"</b> confirmation button.
+                </p>
+              </div>
+
+              {elderProfile && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-xs font-semibold">
+                  <span>Your CarePasscode:</span>
+                  <span className="font-mono bg-white px-2 py-0.5 rounded border border-teal-300 font-bold">
+                    {elderProfile.carePasscode}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          /* CAREGIVER DASHBOARD MODE */
+          <div className="space-y-6">
+            {/* Caregiver Welcome Banner */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <span className="text-[11px] font-bold text-teal-700 uppercase tracking-wider bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
+                  Caregiver Executive Dashboard
+                </span>
+                <h1 className="text-xl font-bold text-slate-900 mt-1">
+                  Monitoring: {activeElder?.fullName || 'Elder Care Circle'}
+                </h1>
+                <p className="text-xs text-slate-500">
+                  Real-time adherence monitoring, prescription uploads, and clinical briefings.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                <button
+                  onClick={() => setIsPairOpen(true)}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 transition"
+                >
+                  <span>Link New Elder</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+                <div className="flex items-center justify-between text-slate-500 mb-1">
+                  <span className="text-xs font-semibold">Today's Adherence</span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                </div>
+                <div className="text-2xl font-extrabold text-slate-900">94%</div>
+                <div className="text-[11px] text-emerald-600 font-medium mt-0.5">
+                  56 of 60 doses taken on-time
+                </div>
+              </div>
+
+              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+                <div className="flex items-center justify-between text-slate-500 mb-1">
+                  <span className="text-xs font-semibold">Active Medications</span>
+                  <Pill className="w-4 h-4 text-teal-600" />
+                </div>
+                <div className="text-2xl font-extrabold text-slate-900">2 Regimens</div>
+                <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                  Telmisartan (BP) & Metformin (Sugar)
+                </div>
+              </div>
+
+              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+                <div className="flex items-center justify-between text-slate-500 mb-1">
+                  <span className="text-xs font-semibold">Next Doctor Visit</span>
+                  <Calendar className="w-4 h-4 text-blue-600" />
+                </div>
+                <div className="text-sm font-bold text-slate-900 mt-1">Dr. Arvind Sharma</div>
+                <div className="text-[11px] text-slate-500 font-medium">Cardiology (Max Hospital)</div>
+              </div>
+
+              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+                <div className="flex items-center justify-between text-slate-500 mb-1">
+                  <span className="text-xs font-semibold">Safety Alerts</span>
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                </div>
+                <div className="text-2xl font-extrabold text-slate-900">All Clear</div>
+                <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                  Zero critical escalations active
+                </div>
+              </div>
+            </div>
+
+            {/* Caregiver Roadmap Info Card */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center space-y-4 shadow-xs">
+              <div className="w-14 h-14 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center mx-auto border border-teal-200">
+                <Sparkles className="w-7 h-7" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">
+                  Phase F1 Connected: Caregiver Navigation & Design System Active
+                </h3>
+                <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+                  Caretaker workspace is initialized with normal medical app typography and clean Practo/Apollo cards.
+                  Ready to link with Phase F2 & F3.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* 3. Clean Medical Footer */}
+      <footer className="border-t border-slate-200 bg-white py-4 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-slate-700">AayuCare (आयु-Care)</span>
+            <span>—</span>
+            <span>Elderly Care & Medication Safety Platform</span>
+          </div>
+          <div>
+            Catalyst x PromptWars 2026 • Powered by Google for Developers & Adaption AI
+          </div>
+        </div>
+      </footer>
+
+      {/* Modals */}
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      <PairElderModal isOpen={isPairOpen} onClose={() => setIsPairOpen(false)} />
     </div>
   );
 };

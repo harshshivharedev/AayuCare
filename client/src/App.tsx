@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from './context/AuthContext';
 import { useLanguage } from './context/LanguageContext';
+import { ApiClient } from './services/api';
 import { Navbar } from './components/Navbar';
 import { AuthModal } from './components/AuthModal';
 import { PairElderModal } from './components/PairElderModal';
@@ -19,7 +20,8 @@ import {
   ShieldAlert,
   CheckCircle2,
   Sparkles,
-  PhoneCall
+  PhoneCall,
+  Users
 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -28,6 +30,19 @@ export const App: React.FC = () => {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isPairOpen, setIsPairOpen] = useState(false);
   const [caregiverTab, setCaregiverTab] = useState<'MEDICATIONS' | 'APPOINTMENTS' | 'ALERTS'>('MEDICATIONS');
+  const [careCircleMembers, setCareCircleMembers] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (elderProfile?.id && user) {
+      ApiClient.get<any[]>(`/care-circle/members/${elderProfile.id}`)
+        .then((res) => {
+          if (res.data) setCareCircleMembers(res.data);
+        })
+        .catch(() => setCareCircleMembers([]));
+    } else {
+      setCareCircleMembers([]);
+    }
+  }, [elderProfile?.id, user]);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
@@ -60,6 +75,25 @@ export const App: React.FC = () => {
                       day: 'numeric'
                     })}
                   </p>
+                  {elderProfile && (
+                    <div className="mt-1.5 flex items-center gap-1.5 text-[11px]">
+                      <span className="font-semibold text-slate-600">
+                        {language === 'hi' ? 'देखभालकर्ता (Caregiver):' : 'Caregiver:'}
+                      </span>
+                      {careCircleMembers.length > 0 ? (
+                        <span className="inline-flex items-center gap-1 font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
+                          <Users className="w-3 h-3" />
+                          <span>{careCircleMembers[0].userName}</span>
+                        </span>
+                      ) : (
+                        <span className="text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 font-medium">
+                          {language === 'hi'
+                            ? `कोई लिंक नहीं (पासकोड: ${elderProfile.carePasscode})`
+                            : `None linked yet (Code: ${elderProfile.carePasscode})`}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 

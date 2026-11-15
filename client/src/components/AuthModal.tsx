@@ -45,18 +45,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setError(null);
     try {
       if (demoRole === 'ELDER') {
-        // Register or login as elder
+        // Register or login as seeded elder
         try {
-          await login('ramesh.sharma@aayucare.in', 'dadaJi@123');
+          await login('dadaji.demo@aayucare.in', 'Password@123');
         } catch {
-          await register('Ramesh Sharma', 'ramesh.sharma@aayucare.in', 'dadaJi@123', 'ELDERLY');
+          await register('Ram Chandra Sharma', 'dadaji.demo@aayucare.in', 'Password@123', 'ELDERLY');
         }
       } else {
-        // Register or login as caregiver
+        // Register or login as seeded caregiver (paired with Ram Chandra Sharma)
         try {
-          await login('priya.caregiver@aayucare.in', 'caregiver@123');
+          await login('rohit.caregiver@aayucare.in', 'Password@123');
         } catch {
-          await register('Priya Sharma', 'priya.caregiver@aayucare.in', 'caregiver@123', 'CAREGIVER');
+          await register('Rohit Sharma (Son)', 'rohit.caregiver@aayucare.in', 'Password@123', 'CAREGIVER');
         }
       }
       onClose();

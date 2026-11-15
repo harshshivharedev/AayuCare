@@ -94,18 +94,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const matched = savedElderId ? res.data.find((e) => e.id === savedElderId) : null;
         if (matched) {
           setActiveElder(matched);
-        } else if (!activeElder) {
+        } else {
           setActiveElder(res.data[0]);
           localStorage.setItem('activeElderId', res.data[0].id);
           localStorage.setItem('activeElder', JSON.stringify(res.data[0]));
         }
+      } else {
+        // If Caregiver has NO linked elders, cleanly reset
+        setLinkedElders([]);
+        setActiveElder(null);
+        localStorage.removeItem('activeElder');
+        localStorage.removeItem('activeElderId');
       }
     } catch {
-      // In-memory or offline fallback
+      setLinkedElders([]);
+      setActiveElder(null);
     }
   };
 
   const handleAuthSuccess = (data: AuthResponseData) => {
+    // 1. Wipe previous session state completely to prevent state leaks
+    localStorage.removeItem('elderProfile');
+    localStorage.removeItem('activeElder');
+    localStorage.removeItem('activeElderId');
+    setLinkedElders([]);
+
     setUser(data.user);
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
@@ -116,6 +129,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('elderProfile', JSON.stringify(data.elderProfile));
       localStorage.setItem('activeElder', JSON.stringify(data.elderProfile));
       localStorage.setItem('activeElderId', data.elderProfile.id);
+    } else {
+      setElderProfile(null);
+      setActiveElder(null);
     }
 
     const defaultMode = data.user.role === 'ELDERLY' ? 'ELDER' : 'CAREGIVER';
